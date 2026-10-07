@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
@@ -16,7 +17,7 @@
     "setup": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts",
     "verify": "npm run typecheck && npm run build",
     "render:build": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts && next build"
-  },
+    },
   "dependencies": {
     "@prisma/client": "^6.16.2",
     "bcryptjs": "^3.0.2",
