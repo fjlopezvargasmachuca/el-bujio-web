@@ -540,3 +540,28 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
 .admin-brand img { width:40px; height:40px; object-fit:cover; border-radius:10px; background:#050505; }
 .login-logo-wrap { display:flex; justify-content:center; margin-bottom:16px; }
 .login-logo-wrap img { width:74px; height:74px; object-fit:cover; border-radius:18px; background:#050505; box-shadow:0 12px 24px rgba(35,49,58,.12); }
+
+/* v1.5 · botón de menú uniforme en escritorio y móvil */
+.menu-bars {
+  width: 18px;
+  height: 14px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 0 auto;
+}
+.menu-bars > span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+.sidebar-collapse-button {
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+}
+.sidebar-collapsed .sidebar-collapse-button .menu-bars { width: 20px; }
+.footer-links a { font-weight: 700; }
+.footer-links a:hover { color: var(--brand-strong); }

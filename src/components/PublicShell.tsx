@@ -21,6 +21,16 @@ function NavIcon({ name }: { name: string }) {
   return <svg {...common}><path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg>;
 }
 
+function MenuBars() {
+  return (
+    <span className="menu-bars" aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </span>
+  );
+}
+
 export function PublicShell({ children, phone }: { children: React.ReactNode; phone: string }) {
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -44,7 +54,7 @@ export function PublicShell({ children, phone }: { children: React.ReactNode; ph
           <Image className="brand-logo" src="/logo-el-bujio.png" alt="Logo de El Bujio" width={44} height={44} priority />
           <span className="brand-copy"><strong>El Bujio</strong></span>
         </Link>
-        <button className="icon-button" aria-label="Abrir menú" onClick={() => setOpen(true)}>☰</button>
+        <button className="icon-button" aria-label="Abrir menú" onClick={() => setOpen(true)}><MenuBars /></button>
       </div>
 
       {open ? <button className="mobile-overlay" aria-label="Cerrar menú" onClick={() => setOpen(false)} /> : null}
@@ -55,8 +65,14 @@ export function PublicShell({ children, phone }: { children: React.ReactNode; ph
             <Image className="brand-logo" src="/logo-el-bujio.png" alt="Logo de El Bujio" width={54} height={54} priority />
             <span className="brand-copy"><strong>El Bujio</strong><span>Venta tradicional</span></span>
           </Link>
-          <button className="sidebar-collapse-button" type="button" onClick={toggleCollapsed} aria-label={collapsed ? "Expandir menú" : "Contraer menú"} title={collapsed ? "Expandir menú" : "Contraer menú"}>
-            {collapsed ? "›" : "‹"}
+          <button
+            className="sidebar-collapse-button"
+            type="button"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? "Expandir menú" : "Contraer menú"}
+            title={collapsed ? "Expandir menú" : "Contraer menú"}
+          >
+            <MenuBars />
           </button>
         </div>
 

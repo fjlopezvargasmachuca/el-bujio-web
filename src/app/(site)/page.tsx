@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 const featureLinks = [
   { href: "/carta", title: "Carta", text: "Entrantes, pescados, carnes, bocadillos y postres." },
   { href: "/menu-del-dia", title: "Menú del día", text: "Un primero, un segundo y un postre entre las opciones disponibles." },
-  { href: "/carta/alergenos", title: "Alérgenos", text: "Consulta de forma clara los alérgenos declarados de cada plato." },
+  { href: "/ofertas", title: "Ofertas", text: "Consulta las promociones disponibles actualmente en la venta." },
   { href: "/contacto", title: "Contacto", text: "Teléfono, horario y ubicación para llegar a la venta." },
 ] as const;
 
@@ -50,7 +50,7 @@ export default async function HomePage() {
         <Link className="feature-heading" href="/carta">
           <div className="eyebrow">El Bujio</div>
           <h2 id="sabores-title">Sabores de siempre</h2>
-          <p>Entra directamente en la sección que quieras consultar.</p>
+          <p>Consulta nuestra carta, el menú del día, las ofertas o cómo llegar.</p>
         </Link>
         <div className="showcase-grid">
           {featureLinks.map((item) => (
@@ -60,33 +60,6 @@ export default async function HomePage() {
               <span className="showcase-arrow" aria-hidden="true">→</span>
             </Link>
           ))}
-        </div>
-      </section>
-
-      <section className="section section-compact grid two">
-        <Link className="card home-action-card" href="/menu-del-dia">
-          <div className="eyebrow">Hoy</div>
-          <h2>Menú del día</h2>
-          <p className="muted">Consulta los primeros, segundos y postres disponibles para hoy.</p>
-          <span className="text-link">Ver menú del día →</span>
-        </Link>
-        <Link className="card home-action-card" href="/ofertas">
-          <div className="eyebrow">Promociones</div>
-          <h2>Ofertas</h2>
-          <p className="muted">Descubre las promociones que estén disponibles actualmente.</p>
-          <span className="text-link">Ver ofertas →</span>
-        </Link>
-      </section>
-
-      <section className="section section-compact card contact-cta">
-        <div>
-          <div className="eyebrow">Contacto</div>
-          <h2>Ven a visitarnos</h2>
-          <p className="muted">Consulta el teléfono, el horario y cómo llegar a Venta El Bujio.</p>
-        </div>
-        <div className="row-actions">
-          <Link className="button" href="/contacto">Ver contacto</Link>
-          {settings?.phone ? <a className="button ghost" href={`tel:${settings.phone.replace(/\s/g, "")}`}>Llamar al {settings.phone}</a> : null}
         </div>
       </section>
 

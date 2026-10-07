@@ -1,3 +1,6 @@
+export const DEFAULT_OPENING_HOURS =
+  "martes|Cerrado\nmiércoles|11:00-23:00\njueves|11:00-23:00\nviernes|11:00-23:00\nsábado|11:00-23:00\ndomingo|11:00-17:00\nlunes|11:00-23:00";
+
 export function formatPrice(cents?: number | null) {
   if (cents == null) return null;
   return new Intl.NumberFormat("es-ES", {
@@ -35,7 +38,8 @@ export function categoryLabel(category: string) {
 }
 
 export function parseOpeningHours(raw?: string | null) {
-  return String(raw ?? "")
+  const source = String(raw ?? "").trim() || DEFAULT_OPENING_HOURS;
+  return source
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean)
@@ -46,5 +50,5 @@ export function parseOpeningHours(raw?: string | null) {
         hours: rest.join("|").trim() ?? "",
       };
     })
-    .filter((item) => item.day);
+    .filter((item) => item.day && item.hours);
 }

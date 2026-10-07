@@ -1,73 +1,31 @@
-# El Bujio — web responsive + carta + administración
+# Venta El Bujio — v1.5
 
-Aplicación web para **El Bujio**, desarrollada con **Next.js + React + TypeScript**, preparada para móvil y escritorio y pensada para compartir en redes sociales.
+Aplicación web de Venta El Bujio desarrollada con **Next.js 15 + React 19 + TypeScript + Prisma + PostgreSQL**.
 
-Esta versión **no incluye el sistema de reservas en la web ni en el panel de administración**. La estructura de base de datos de reservas se conserva desactivada para poder implementarla más adelante sin rehacer el modelo de datos.
+Esta revisión está preparada para continuar desplegándose en **Vercel** desde GitHub. El sistema de reservas sigue desactivado, aunque su estructura de base de datos permanece preparada para una fase futura.
 
-## Cambios incluidos en esta revisión
+## Cambios de esta versión
 
-- Nueva paleta de color más profesional y distinta a la carta original.
-- El negocio pasa a presentarse como **Venta** en vez de bar/restaurante.
-- En el menú lateral aparece solo **Carta**.
-- Se añade la categoría **Postres** en la carta.
-- El **menú del día** se organiza en **Primeros**, **Segundos** y **Postres**.
-- El menú del día **no muestra precio**.
-- El administrador puede añadir, editar o quitar platos del menú del día en cualquiera de esas secciones.
-- Se actualiza el contacto con:
-  - teléfono `956 71 60 77`
-  - enlace a Google Maps
-  - horario editable
-- La tarjeta de mapa del contacto se puede pulsar para abrir Google Maps.
-- El pie de página muestra el año de forma dinámica automáticamente.
-- El `seed` crea/actualiza el usuario administrador indicado en `.env`.
+- Carta inicial sincronizada con la fotografía facilitada por la venta.
+- Precios de la fotografía cargados como precio de plato/ración.
+- Ingredientes iniciales y alérgenos normalizados para cada plato.
+- Menú del día de ejemplo en base de datos con primeros, segundos y postres.
+- Precio inicial del menú del día: **18 €**, editable desde administración.
+- Recuperación automática del horario público si la configuración estuviera vacía.
+- Enlace **Administración** restaurado en el pie de página público.
+- Botón de contraer/expandir el menú lateral de escritorio con icono profesional de tres líneas.
+- Inicio simplificado: Carta, Menú del día, Ofertas y Contacto usan ahora el mismo estilo.
+- Eliminado el acceso duplicado al menú del día/ofertas de la portada.
+- Eliminado el acceso directo a alérgenos de la portada; sigue disponible dentro de Carta.
+- La migración `20261007193000_seed_catalog_and_daily_menu` carga estos datos automáticamente una sola vez en cada base.
 
-## Funcionalidades actuales
+## Carta inicial
 
-### Web pública
+La fotografía original contiene un único precio por producto. Por ello se almacena como `pricePlatoCents`. Tapa y media quedan vacíos para que el administrador los añada solo si el restaurante decide utilizarlos.
 
-- Inicio responsive.
-- Navegación lateral en escritorio y menú móvil.
-- Menú del día.
-- Carta organizada por categorías.
-- Categoría de **postres**.
-- Precios independientes para **tapa / media ración / plato**.
-- Detalle desplegable de cada plato con ingredientes y alérgenos.
-- Ofertas del día.
-- Contacto con teléfono, dirección, horario y acceso a Google Maps.
-- Botón para compartir la web.
-- Metadatos SEO/Open Graph.
-- `sitemap.xml` y `robots.txt`.
+Los postres de ejemplo de versiones anteriores se conservan y son editables desde administración.
 
-### Panel de administración
-
-Ruta:
-
-```text
-/admin/login
-```
-
-El administrador puede:
-
-- iniciar sesión mediante correo y contraseña;
-- añadir, editar, ocultar y eliminar platos;
-- cambiar precios de tapa, media y plato;
-- editar ingredientes y alérgenos;
-- gestionar el menú del día por secciones;
-- gestionar ofertas;
-- editar teléfono, dirección, horario, texto de contacto y enlace de Google Maps;
-- revisar un resumen del contenido publicado.
-
-## Stack
-
-- **Frontend:** Next.js 15, React 19, TypeScript.
-- **Backend:** Server Components + Server Actions de Next.js.
-- **Base de datos:** PostgreSQL.
-- **ORM:** Prisma.
-- **Autenticación admin:** JWT en cookie HTTP-only con `jose` + hash `bcryptjs`.
-- **Estilos:** CSS responsive propio.
-- **Docker:** no se utiliza.
-
-## Puesta en marcha en Visual Studio Code
+## Desarrollo local
 
 ### 1. Instalar dependencias
 
@@ -75,106 +33,113 @@ El administrador puede:
 npm install
 ```
 
-### 2. Crear `.env`
-
-Windows PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Después edita `.env`:
+### 2. Configurar `.env`
 
 ```env
 DATABASE_URL="postgresql://postgres:TU_PASSWORD@localhost:5432/el_bujio?schema=public"
-AUTH_SECRET="una-clave-aleatoria-larga-de-al-menos-32-caracteres"
+AUTH_SECRET="TU_SECRETO_LARGO"
 ADMIN_EMAIL="admin@elbujio.es"
-ADMIN_PASSWORD="CambiaEstaClave123!"
+ADMIN_PASSWORD="Bujio2026!"
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 ```
 
-Para generar `AUTH_SECRET`:
+Generar `AUTH_SECRET`:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('base64url'))"
 ```
 
-### 3. Preparar la base de datos
+### 3. Aplicar migraciones y preparar datos
 
 ```bash
 npm run setup
 ```
 
-Ese comando ejecuta:
-
-- `prisma generate`
-- `prisma migrate deploy`
-- `tsx prisma/seed.ts`
-
-### 4. Usuario administrador
-
-El `seed` crea o actualiza automáticamente el usuario administrador definido en `.env`.
-
-Por defecto:
-
-```text
-Email: admin@elbujio.es
-Password: la que pongas en ADMIN_PASSWORD
-```
-
-Si quieres volver a recrearlo:
-
-```bash
-npm run db:seed
-```
-
-### 5. Arrancar el proyecto
+### 4. Arrancar
 
 ```bash
 npm run dev
 ```
 
-Abre en el navegador:
+Rutas principales:
 
 ```text
-Web pública:          http://localhost:3000
-Carta:                http://localhost:3000/carta
-Menú del día:         http://localhost:3000/menu-del-dia
-Ofertas:              http://localhost:3000/ofertas
-Contacto:             http://localhost:3000/contacto
-Administración:       http://localhost:3000/admin/login
+http://localhost:3000
+http://localhost:3000/carta
+http://localhost:3000/carta/alergenos
+http://localhost:3000/menu-del-dia
+http://localhost:3000/ofertas
+http://localhost:3000/contacto
+http://localhost:3000/admin/login
 ```
 
-### 6. Comprobar antes de subir a Git
+## Comprobaciones
+
+```bash
+npm run typecheck
+npm run build
+```
+
+O:
 
 ```bash
 npm run verify
 ```
 
-## Estructura principal
+## Actualizar la versión desplegada en Vercel
 
-```text
-el-bujio-web-final/
-├── docs/
-│   └── RESERVAS_FUTURO.md
-├── prisma/
-│   ├── migrations/
-│   ├── schema.prisma
-│   └── seed.ts
-├── public/
-│   └── menu-original.jpg
-├── src/
-│   ├── app/
-│   ├── components/
-│   └── lib/
-├── .env.example
-├── package.json
-├── next.config.ts
-└── tsconfig.json
+Si el repositorio ya está conectado a Vercel, basta con subir esta versión a GitHub:
+
+```bash
+git status
+git add .
+git commit -m "Actualiza carta, menu del dia y navegacion"
+git push
 ```
 
-## Notas
+Vercel ejecutará:
 
-- La base PostgreSQL mantiene la estructura de reservas solo para una futura fase.
-- Los ingredientes y alérgenos cargados inicialmente son orientativos y el administrador puede corregirlos.
-- La nueva migración añade la categoría **POSTRES** y la configuración de **Google Maps** y **horario** en contacto.
+```text
+npm run vercel-build
+```
+
+El script incluye:
+
+```text
+prisma generate
+prisma migrate deploy
+next build
+```
+
+La nueva migración se aplicará automáticamente a la PostgreSQL configurada en Vercel. Esa migración:
+
+- garantiza que existan los datos básicos de contacto/horario;
+- carga o sincroniza los platos de la carta de la fotografía;
+- carga un menú del día de ejemplo;
+- establece 18 € como precio de ejemplo si todavía no existe precio.
+
+Después de aplicarse una vez, Prisma la registra como ejecutada y no volverá a sobrescribir los cambios que haga el administrador en despliegues posteriores.
+
+### Si una base nueva todavía no tiene usuario administrador
+
+El hash de contraseña no se incluye en las migraciones. Para una base completamente nueva ejecuta una vez el seed con las variables de producción de Vercel:
+
+```bash
+vercel env run -e production -- npm run db:seed
+```
+
+## Seguridad
+
+- `.env` está excluido mediante `.gitignore`.
+- Sesión administrativa mediante cookie HTTP-only.
+- `Secure` en producción y `SameSite=Strict`.
+- Contraseñas almacenadas con bcrypt.
+- Operaciones administrativas verificadas en servidor.
+- Validación de URLs configurables.
+- Los alérgenos se seleccionan de un listado normalizado, no mediante texto libre.
+
+Antes de publicar como versión definitiva, los ingredientes y alérgenos deben ser confirmados por cocina frente a las recetas reales y posibles contaminaciones cruzadas.
+
+## Nota sobre reservas
+
+Las tablas de reservas siguen presentes en Prisma/PostgreSQL para una posible ampliación futura, pero no existe interfaz pública ni administrativa de reservas en esta versión.

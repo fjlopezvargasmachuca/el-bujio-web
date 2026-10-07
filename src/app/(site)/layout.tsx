@@ -13,9 +13,10 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <footer className="footer">
         <div className="footer-inner">
           <div>© {new Date().getFullYear()} El Bujio · Venta</div>
-          <div className="row-actions">
+          <div className="row-actions footer-links">
             <Link href="/carta">Carta</Link>
             <Link href="/contacto">Contacto</Link>
+            <Link href="/admin/login">Administración</Link>
           </div>
         </div>
       </footer>
