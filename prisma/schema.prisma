@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Area {
+  INTERIOR
+  EXTERIOR
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum ReservationSource {
+  PUBLIC
+  ADMIN
+}
+
+enum MenuCategory {
+  ENTRANTES
+  PESCADO
+  CARNES
+  BOCADILLOS
+  POSTRES
+  OTROS
+}
+
+enum SpecialType {
+  MENU_DIA
+  OFERTA
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSettings {
+  id                     Int      @id @default(1)
+  restaurantName         String   @default("El Bujio")
+  phone                  String   @default("956 71 60 77")
+  address                String   @default("Venta El Bujio · Benamahoma, Cádiz")
+  contactText            String   @default("Llámanos para cualquier consulta sobre la carta, el menú del día, los horarios o la venta.")
+  instagramUrl           String?
+  facebookUrl            String?
+  mapsUrl                String?  @default("https://www.google.com/maps/place//data=!4m2!3m1!1s0xd0d1472e8bb1e95:0x153d77a80ef824a8?sa=X&ved=1t:8290&ictx=111")
+  openingHours           String   @default("martes|Cerrado\nmiércoles|11:00-23:00\njueves|11:00-23:00\nviernes|11:00-23:00\nsábado|11:00-23:00\ndomingo|11:00-17:00\nlunes|11:00-23:00")
+  menuDayPriceCents      Int?
+  reservationEnabled     Boolean  @default(false)
+  bookingDurationMinutes Int      @default(90)
+  slotMinutes            Int      @default(30)
+  updatedAt              DateTime @updatedAt
+}
+
+// Estructura conservada para una futura fase de reservas.
+// No se expone actualmente en la web ni en el panel de administración.
+model DiningTable {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  area         Area
+  capacity     Int
+  active       Boolean       @default(true)
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([area, active])
+}
+
+model Reservation {
+  id           String            @id @default(cuid())
+  name         String
+  dateKey      String
+  startMinutes Int
+  endMinutes   Int
+  guests       Int
+  area         Area
+  status       ReservationStatus @default(CONFIRMED)
+  source       ReservationSource @default(PUBLIC)
+  notes        String?
+  publicCode   String            @unique
+  tableId      String
+  table        DiningTable       @relation(fields: [tableId], references: [id], onDelete: Restrict)
+  createdAt    DateTime          @default(now())
+  cancelledAt  DateTime?
+
+  @@index([dateKey, area, status])
+  @@index([tableId, dateKey, status])
+}
+
+model MenuItem {
+  id              String       @id @default(cuid())
+  name            String
+  description     String?
+  category        MenuCategory
+  ingredients     String[]
+  allergens       String[]
+  priceTapaCents  Int?
+  priceMediaCents Int?
+  pricePlatoCents Int?
+  active          Boolean      @default(true)
+  sortOrder       Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([category, active, sortOrder])
+}
+
+model SpecialItem {
+  id          String      @id @default(cuid())
+  type        SpecialType
+  name        String
+  description String?
+  section     String?
+  priceCents  Int?
+  ingredients String[]
+  allergens   String[]
+  active      Boolean     @default(true)
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([type, active, sortOrder])
+}

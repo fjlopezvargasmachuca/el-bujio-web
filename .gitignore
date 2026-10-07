@@ -1,0 +1,12 @@
+node_modules/
+.next/
+coverage/
+dist/
+*.log
+.DS_Store
+prisma/dev.db
+*.tsbuildinfo
+
+# Secrets
+.env*
+!.env.example
