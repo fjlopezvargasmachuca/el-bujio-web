@@ -12,10 +12,43 @@ const featureLinks = [
   { href: "/contacto", title: "Contacto", text: "Teléfono, horario y ubicación para llegar a la venta." },
 ] as const;
 
+const FALLBACK_HOME_IMAGE_1 = "https://turismo.grazalema.es/images/images/FOTOS/GUIA/2020/COMER/101-El-Bujio-01.jpg";
+const FALLBACK_HOME_IMAGE_2 = "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/.Spain%2C_Andalusia%2C_Benamahoma_%2803%29.jpg/1280px-.Spain%2C_Andalusia%2C_Benamahoma_%2803%29.jpg";
+
 export default async function HomePage() {
-  const settings = await prisma.siteSettings.findUnique({ where: { id: 1 } });
+  const settings = (await prisma.siteSettings.findUnique({
+    where: { id: 1 },
+    select: ({
+      restaurantName: true,
+      phone: true,
+      address: true,
+      mapsUrl: true,
+      updatedAt: true,
+      homeImage1Mime: true,
+      homeImage1Title: true,
+      homeImage1Description: true,
+      homeImage1CreditText: true,
+      homeImage1CreditUrl: true,
+      homeImage2Mime: true,
+      homeImage2Title: true,
+      homeImage2Description: true,
+      homeImage2CreditText: true,
+      homeImage2CreditUrl: true,
+    } as any),
+  })) as any;
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
   const mapsUrl = settings?.mapsUrl ?? "https://www.google.com/maps/place//data=!4m2!3m1!1s0xd0d1472e8bb1e95:0x153d77a80ef824a8?sa=X&ved=1t:8290&ictx=111";
+  const imageVersion = settings?.updatedAt?.getTime() ?? Date.now();
+  const homeImage1Src = (settings as any)?.homeImage1Mime ? `/api/portada/1/imagen?v=${imageVersion}` : FALLBACK_HOME_IMAGE_1;
+  const homeImage2Src = (settings as any)?.homeImage2Mime ? `/api/portada/2/imagen?v=${imageVersion}` : FALLBACK_HOME_IMAGE_2;
+  const homeImage1Title = (settings as any)?.homeImage1Title ?? "La venta y su terraza";
+  const homeImage1Description = (settings as any)?.homeImage1Description ?? "Un rincón tradicional a la entrada de Benamahoma.";
+  const homeImage1CreditText = (settings as any)?.homeImage1CreditText ?? "Foto: Turismo de Grazalema";
+  const homeImage1CreditUrl = (settings as any)?.homeImage1CreditUrl ?? "https://turismo.grazalema.es/index.php/la-guia/comer/336-101-venta-el-bujio";
+  const homeImage2Title = (settings as any)?.homeImage2Title ?? "Benamahoma y su entorno";
+  const homeImage2Description = (settings as any)?.homeImage2Description ?? "Naturaleza, pueblo blanco y Sierra de Grazalema.";
+  const homeImage2CreditText = (settings as any)?.homeImage2CreditText ?? "Foto: Vincent van Zeijst · CC BY-SA 4.0";
+  const homeImage2CreditUrl = (settings as any)?.homeImage2CreditUrl ?? "https://commons.wikimedia.org/wiki/File:.Spain,_Andalusia,_Benamahoma_(03).jpg";
 
   const jsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -56,27 +89,19 @@ export default async function HomePage() {
         </div>
         <div className="place-gallery">
           <figure className="place-photo-card">
-            <img
-              src="https://turismo.grazalema.es/images/images/FOTOS/GUIA/2020/COMER/101-El-Bujio-01.jpg"
-              alt="Exterior y terraza de Venta El Bujio en Benamahoma"
-              loading="lazy"
-            />
+            <img src={homeImage1Src} alt={homeImage1Title} loading="lazy" />
             <figcaption>
-              <strong>La venta y su terraza</strong>
-              <span>Un rincón tradicional a la entrada de Benamahoma.</span>
-              <a href="https://turismo.grazalema.es/index.php/la-guia/comer/336-101-venta-el-bujio" target="_blank" rel="noreferrer">Foto: Turismo de Grazalema</a>
+              <strong>{homeImage1Title}</strong>
+              <span>{homeImage1Description}</span>
+              {homeImage1CreditText ? (homeImage1CreditUrl ? <a href={homeImage1CreditUrl} target="_blank" rel="noreferrer">{homeImage1CreditText}</a> : <small>{homeImage1CreditText}</small>) : null}
             </figcaption>
           </figure>
           <figure className="place-photo-card">
-            <img
-              src="https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/.Spain%2C_Andalusia%2C_Benamahoma_%2803%29.jpg/1280px-.Spain%2C_Andalusia%2C_Benamahoma_%2803%29.jpg"
-              alt="Vista panorámica de Benamahoma y la Sierra de Grazalema"
-              loading="lazy"
-            />
+            <img src={homeImage2Src} alt={homeImage2Title} loading="lazy" />
             <figcaption>
-              <strong>Benamahoma y su entorno</strong>
-              <span>Naturaleza, pueblo blanco y Sierra de Grazalema.</span>
-              <a href="https://commons.wikimedia.org/wiki/File:.Spain,_Andalusia,_Benamahoma_(03).jpg" target="_blank" rel="noreferrer">Foto: Vincent van Zeijst · CC BY-SA 4.0</a>
+              <strong>{homeImage2Title}</strong>
+              <span>{homeImage2Description}</span>
+              {homeImage2CreditText ? (homeImage2CreditUrl ? <a href={homeImage2CreditUrl} target="_blank" rel="noreferrer">{homeImage2CreditText}</a> : <small>{homeImage2CreditText}</small>) : null}
             </figcaption>
           </figure>
         </div>

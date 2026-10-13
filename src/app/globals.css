@@ -775,3 +775,32 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
   .place-gallery { grid-template-columns:1fr; }
   .place-gallery-section { margin-top:22px; }
 }
+
+/* Administración: galería editable de la portada */
+.admin-home-gallery-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:16px; }
+.admin-home-gallery-heading h3 { margin-top:6px; }
+.admin-home-gallery-heading p { margin:8px 0 0; }
+.admin-home-gallery-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.admin-home-gallery-card {
+  display:grid;
+  gap:13px;
+  padding:16px;
+  border:1px solid rgba(35,49,58,.09);
+  border-radius:20px;
+  background:rgba(255,255,255,.58);
+}
+.admin-home-gallery-preview {
+  width:100%;
+  aspect-ratio:16/10;
+  object-fit:cover;
+  display:block;
+  border-radius:16px;
+  border:1px solid rgba(35,49,58,.08);
+  background:var(--bg-soft);
+}
+.admin-upload-note { margin:14px 0 0; font-size:.9rem; }
+.place-photo-card figcaption small { color:var(--muted); font-size:.78rem; margin-top:3px; }
+
+@media (max-width:760px) {
+  .admin-home-gallery-grid { grid-template-columns:1fr; }
+}

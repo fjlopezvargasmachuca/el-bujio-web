@@ -55,6 +55,18 @@ model SiteSettings {
   mapsUrl                String?  @default("https://www.google.com/maps/place//data=!4m2!3m1!1s0xd0d1472e8bb1e95:0x153d77a80ef824a8?sa=X&ved=1t:8290&ictx=111")
   openingHours           String   @default("martes|Cerrado\nmiércoles|11:00-23:00\njueves|11:00-23:00\nviernes|11:00-23:00\nsábado|11:00-23:00\ndomingo|11:00-17:00\nlunes|11:00-23:00")
   menuDayPriceCents      Int?
+  homeImage1Data         String?  @db.Text
+  homeImage1Mime         String?
+  homeImage1Title        String   @default("La venta y su terraza")
+  homeImage1Description  String   @default("Un rincón tradicional a la entrada de Benamahoma.")
+  homeImage1CreditText   String?  @default("Foto: Turismo de Grazalema")
+  homeImage1CreditUrl    String?  @default("https://turismo.grazalema.es/index.php/la-guia/comer/336-101-venta-el-bujio")
+  homeImage2Data         String?  @db.Text
+  homeImage2Mime         String?
+  homeImage2Title        String   @default("Benamahoma y su entorno")
+  homeImage2Description  String   @default("Naturaleza, pueblo blanco y Sierra de Grazalema.")
+  homeImage2CreditText   String?  @default("Foto: Vincent van Zeijst · CC BY-SA 4.0")
+  homeImage2CreditUrl    String?  @default("https://commons.wikimedia.org/wiki/File:.Spain,_Andalusia,_Benamahoma_(03).jpg")
   reservationEnabled     Boolean  @default(false)
   bookingDurationMinutes Int      @default(90)
   slotMinutes            Int      @default(30)

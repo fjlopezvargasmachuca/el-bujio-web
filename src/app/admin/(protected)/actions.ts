@@ -70,6 +70,40 @@ async function readMenuImage(formData: FormData, current?: { imageData: string |
   return { imageData: buffer.toString("base64"), imageMime: detectedMime, error: null as string | null };
 }
 
+async function readSiteImage(
+  formData: FormData,
+  inputName: string,
+  removeName: string,
+  current?: { imageData: string | null; imageMime: string | null },
+) {
+  if (formData.get(removeName) === "on") return { imageData: null, imageMime: null, error: null as string | null };
+
+  const candidate = formData.get(inputName);
+  if (!(candidate instanceof File) || candidate.size === 0) {
+    return {
+      imageData: current?.imageData ?? null,
+      imageMime: current?.imageMime ?? null,
+      error: null as string | null,
+    };
+  }
+
+  if (candidate.size > MAX_IMAGE_BYTES) {
+    return { imageData: current?.imageData ?? null, imageMime: current?.imageMime ?? null, error: "size" };
+  }
+
+  const buffer = Buffer.from(await candidate.arrayBuffer());
+  let detectedMime: string | null = null;
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) detectedMime = "image/jpeg";
+  if (buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) detectedMime = "image/png";
+  if (buffer.length >= 12 && buffer.subarray(0, 4).toString("ascii") === "RIFF" && buffer.subarray(8, 12).toString("ascii") === "WEBP") detectedMime = "image/webp";
+
+  if (!detectedMime || !ALLOWED_IMAGE_TYPES.has(detectedMime)) {
+    return { imageData: current?.imageData ?? null, imageMime: current?.imageMime ?? null, error: "format" };
+  }
+
+  return { imageData: buffer.toString("base64"), imageMime: detectedMime, error: null as string | null };
+}
+
 function specialType(value: string) {
   return value === SpecialType.OFERTA ? SpecialType.OFERTA : SpecialType.MENU_DIA;
 }
@@ -250,32 +284,60 @@ export async function updateMenuDayPrice(formData: FormData) {
 
 export async function updateContact(formData: FormData) {
   await requireAdmin();
+  const current = (await prisma.siteSettings.findUnique({
+    where: { id: 1 },
+    select: ({
+      homeImage1Data: true,
+      homeImage1Mime: true,
+      homeImage2Data: true,
+      homeImage2Mime: true,
+    } as any),
+  })) as any;
+
+  const homeImage1 = await readSiteImage(formData, "homeImage1", "removeHomeImage1", {
+    imageData: current?.homeImage1Data ?? null,
+    imageMime: current?.homeImage1Mime ?? null,
+  });
+  const homeImage2 = await readSiteImage(formData, "homeImage2", "removeHomeImage2", {
+    imageData: current?.homeImage2Data ?? null,
+    imageMime: current?.homeImage2Mime ?? null,
+  });
+
+  const imageError = homeImage1.error ?? homeImage2.error;
+  if (imageError) redirect(`/admin/contacto?status=home_image_${imageError}`);
+
+  const sharedData = {
+    phone: str(formData, "phone", 30),
+    address: str(formData, "address", 240),
+    contactText: str(formData, "contactText", 800),
+    instagramUrl: safeHttpUrl(str(formData, "instagramUrl", 500)),
+    facebookUrl: safeHttpUrl(str(formData, "facebookUrl", 500)),
+    mapsUrl: safeHttpUrl(str(formData, "mapsUrl", 900)),
+    openingHours: str(formData, "openingHours", 1200),
+    homeImage1Data: homeImage1.imageData,
+    homeImage1Mime: homeImage1.imageMime,
+    homeImage1Title: str(formData, "homeImage1Title", 120) || "La venta y su terraza",
+    homeImage1Description: str(formData, "homeImage1Description", 500) || "Un rincón tradicional a la entrada de Benamahoma.",
+    homeImage1CreditText: str(formData, "homeImage1CreditText", 160) || null,
+    homeImage1CreditUrl: safeHttpUrl(str(formData, "homeImage1CreditUrl", 900)),
+    homeImage2Data: homeImage2.imageData,
+    homeImage2Mime: homeImage2.imageMime,
+    homeImage2Title: str(formData, "homeImage2Title", 120) || "Benamahoma y su entorno",
+    homeImage2Description: str(formData, "homeImage2Description", 500) || "Naturaleza, pueblo blanco y Sierra de Grazalema.",
+    homeImage2CreditText: str(formData, "homeImage2CreditText", 160) || null,
+    homeImage2CreditUrl: safeHttpUrl(str(formData, "homeImage2CreditUrl", 900)),
+  };
+
   await prisma.siteSettings.upsert({
     where: { id: 1 },
-    create: {
-      id: 1,
-      phone: str(formData, "phone", 30),
-      address: str(formData, "address", 240),
-      contactText: str(formData, "contactText", 800),
-      instagramUrl: safeHttpUrl(str(formData, "instagramUrl", 500)),
-      facebookUrl: safeHttpUrl(str(formData, "facebookUrl", 500)),
-      mapsUrl: safeHttpUrl(str(formData, "mapsUrl", 900)),
-      openingHours: str(formData, "openingHours", 1200),
-      reservationEnabled: false,
-    },
-    update: {
-      phone: str(formData, "phone", 30),
-      address: str(formData, "address", 240),
-      contactText: str(formData, "contactText", 800),
-      instagramUrl: safeHttpUrl(str(formData, "instagramUrl", 500)),
-      facebookUrl: safeHttpUrl(str(formData, "facebookUrl", 500)),
-      mapsUrl: safeHttpUrl(str(formData, "mapsUrl", 900)),
-      openingHours: str(formData, "openingHours", 1200),
-    },
+    create: ({ id: 1, ...sharedData, reservationEnabled: false } as any),
+    update: (sharedData as any),
   });
   revalidatePath("/");
   revalidatePath("/contacto");
   revalidatePath("/admin");
   revalidatePath("/admin/contacto");
+  revalidatePath("/api/portada/1/imagen");
+  revalidatePath("/api/portada/2/imagen");
   redirect("/admin/contacto?status=saved");
 }

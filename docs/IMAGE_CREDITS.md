@@ -18,3 +18,9 @@ La página institucional identifica la imagen con Venta El Bujio, pero no public
 - Licencia: https://creativecommons.org/licenses/by-sa/4.0/
 
 La atribución se muestra también debajo de la fotografía en la portada.
+
+## Imágenes editables desde administración
+
+Desde la versión 1.8, las dos fotografías de presentación de la portada pueden sustituirse desde **Administración → Datos públicos**. El administrador también puede modificar el título, la descripción y el crédito de cada imagen.
+
+Si se reemplaza una fotografía por una imagen propia del establecimiento, conviene eliminar o actualizar el crédito anterior. Si se utiliza una imagen de terceros, debe conservarse la atribución y el enlace exigidos por su licencia o autorización de uso.
