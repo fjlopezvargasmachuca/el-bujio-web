@@ -13,10 +13,14 @@ export function ShareButtons() {
     return window.location.origin;
   }
 
-  async function copy(messageAfter = "Enlace copiado") {
-    await navigator.clipboard.writeText(shareUrl());
-    setMessage(messageAfter);
-    window.setTimeout(() => setMessage(""), 3000);
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(shareUrl());
+      setMessage("Enlace copiado");
+    } catch {
+      setMessage("No se pudo copiar automáticamente. Mantén pulsado sobre la dirección del navegador para copiarla.");
+    }
+    window.setTimeout(() => setMessage(""), 4500);
   }
 
   function encoded() {
@@ -25,22 +29,14 @@ export function ShareButtons() {
     return { url, text };
   }
 
-  async function copyAndOpen(network: "instagram" | "tiktok") {
-    const label = network === "instagram" ? "Instagram" : "TikTok";
-    await copy(`Enlace copiado. Pégalo en ${label}.`);
-    open(network === "instagram" ? "https://www.instagram.com/" : "https://www.tiktok.com/");
-  }
-
   return (
     <div className="share-block">
       <div className="share-buttons" aria-label="Compartir El Bujio">
-        <button type="button" onClick={() => copyAndOpen("instagram")}>Instagram</button>
-        <button type="button" onClick={() => copyAndOpen("tiktok")}>TikTok</button>
         <button type="button" onClick={() => { const { url, text } = encoded(); open(`https://wa.me/?text=${text}%20${url}`); }}>WhatsApp</button>
         <button type="button" onClick={() => { const { url } = encoded(); open(`https://www.facebook.com/sharer/sharer.php?u=${url}`); }}>Facebook</button>
         <button type="button" onClick={() => { const { url, text } = encoded(); open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`); }}>X</button>
         <button type="button" onClick={() => { const { url, text } = encoded(); open(`https://t.me/share/url?url=${url}&text=${text}`); }}>Telegram</button>
-        <button type="button" onClick={() => copy()}>Copiar enlace</button>
+        <button type="button" onClick={copy}>Copiar enlace</button>
       </div>
       <div className="share-feedback" aria-live="polite">{message}</div>
     </div>
