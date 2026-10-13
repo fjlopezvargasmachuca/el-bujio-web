@@ -24,13 +24,20 @@ export default async function AllergenChartPage() {
         comunícalo al personal antes de pedir para poder confirmar la elaboración y posibles trazas.
       </p>
 
-      <div className="allergen-table-wrap">
+      <div className="allergen-scroll-hint" aria-hidden="true">
+        <span>↔</span>
+        <span>Desliza horizontalmente para ver todos los alérgenos. La cabecera y el nombre del plato permanecen visibles.</span>
+      </div>
+
+      <div className="allergen-table-wrap" tabIndex={0} aria-label="Tabla desplazable de alérgenos">
         <table className="allergen-table">
           <thead>
             <tr>
-              <th className="dish-column">Plato</th>
+              <th className="dish-column" scope="col">Plato</th>
               {ALLERGENS.map((allergen) => (
-                <th key={allergen.value} title={allergen.label}><span>{allergen.value}</span></th>
+                <th key={allergen.value} title={allergen.label} scope="col">
+                  <span>{allergen.value}</span>
+                </th>
               ))}
             </tr>
           </thead>
@@ -40,7 +47,8 @@ export default async function AllergenChartPage() {
               if (!categoryItems.length) return null;
               return [
                 <tr className="allergen-category-row" key={`${category}-heading`}>
-                  <th colSpan={ALLERGENS.length + 1}>{categoryLabel(category)}</th>
+                  <th className="allergen-category-name" scope="rowgroup">{categoryLabel(category)}</th>
+                  <td className="allergen-category-fill" colSpan={ALLERGENS.length} aria-hidden="true" />
                 </tr>,
                 ...categoryItems.map((item) => {
                   const set = new Set(item.allergens);

@@ -503,16 +503,116 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
 .allergen-cta { margin-top:42px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
 .allergen-cta h2 { margin-top:6px; }
 .allergen-intro { max-width:850px; }
-.allergen-table-wrap { overflow:auto; margin-top:28px; border:1px solid rgba(35,49,58,.1); border-radius:18px; background:#fffdfa; box-shadow:var(--shadow); }
-.allergen-table { min-width:1500px; font-size:.84rem; }
-.allergen-table th, .allergen-table td { text-align:center; padding:9px 8px; }
-.allergen-table thead th { position:sticky; top:0; z-index:2; background:#f2eadf; color:var(--text); text-transform:none; letter-spacing:0; }
-.allergen-table thead th:not(.dish-column) span { display:inline-block; writing-mode:vertical-rl; transform:rotate(180deg); min-height:110px; }
-.allergen-table .dish-column, .allergen-table .dish-name { position:sticky; left:0; z-index:3; min-width:230px; text-align:left; background:#fffdfa; }
-.allergen-table thead .dish-column { background:#f2eadf; z-index:4; }
-.allergen-category-row th { position:static!important; text-align:left!important; background:var(--brand-strong)!important; color:#fff!important; font-size:.88rem; letter-spacing:.06em; }
+.allergen-scroll-hint {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:20px;
+  color:var(--muted);
+  font-size:.9rem;
+}
+.allergen-scroll-hint > span:first-child {
+  display:inline-grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  flex:0 0 auto;
+  border-radius:999px;
+  background:var(--brand-soft);
+  color:var(--brand-strong);
+  font-weight:900;
+}
+.allergen-table-wrap {
+  position:relative;
+  width:100%;
+  max-width:100%;
+  max-height:min(72dvh, 760px);
+  overflow:auto;
+  margin-top:14px;
+  border:1px solid rgba(35,49,58,.1);
+  border-radius:18px;
+  background:#fffdfa;
+  box-shadow:var(--shadow);
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x pan-y;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.allergen-table-wrap:focus-visible {
+  outline:3px solid rgba(78,107,88,.22);
+  outline-offset:3px;
+}
+.allergen-table {
+  width:max-content;
+  min-width:1500px;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:.84rem;
+}
+.allergen-table th,
+.allergen-table td {
+  box-sizing:border-box;
+  text-align:center;
+  padding:9px 8px;
+  border-right:1px solid rgba(35,49,58,.055);
+  border-bottom:1px solid rgba(35,49,58,.07);
+  background:#fffdfa;
+}
+.allergen-table thead th {
+  position:sticky;
+  top:0;
+  z-index:5;
+  height:132px;
+  background:#f2eadf;
+  color:var(--text);
+  text-transform:none;
+  letter-spacing:0;
+  box-shadow:0 1px 0 rgba(35,49,58,.12);
+}
+.allergen-table thead th:not(.dish-column) {
+  width:68px;
+  min-width:68px;
+  max-width:68px;
+}
+.allergen-table thead th:not(.dish-column) span {
+  display:inline-block;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  white-space:nowrap;
+  line-height:1;
+}
+.allergen-table .dish-column,
+.allergen-table .dish-name,
+.allergen-table .allergen-category-name {
+  position:sticky;
+  left:0;
+  z-index:4;
+  width:230px;
+  min-width:230px;
+  max-width:230px;
+  text-align:left;
+  background:#fffdfa;
+  box-shadow:5px 0 10px -8px rgba(35,49,58,.55);
+}
+.allergen-table thead .dish-column {
+  z-index:8;
+  background:#f2eadf;
+}
+.allergen-category-row .allergen-category-name {
+  z-index:6;
+  background:var(--brand-strong)!important;
+  color:#fff!important;
+  font-size:.88rem;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.allergen-category-row .allergen-category-fill {
+  background:var(--brand-strong)!important;
+  padding:0;
+}
 .allergen-x { display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%; background:rgba(177,77,67,.12); color:#8f382f; font-weight:900; }
 .allergen-empty { color:rgba(35,49,58,.22); }
+
 .admin-flash { margin:0 0 20px; font-weight:750; }
 
 @media (max-width:980px) {
@@ -528,6 +628,12 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
 }
 
 @media (max-width:680px) {
+  .allergen-table-wrap { max-height:68dvh; border-radius:14px; }
+  .allergen-table { min-width:1280px; font-size:.8rem; }
+  .allergen-table .dish-column, .allergen-table .dish-name, .allergen-table .allergen-category-name { width:160px; min-width:160px; max-width:160px; }
+  .allergen-table thead th:not(.dish-column) { width:60px; min-width:60px; max-width:60px; }
+  .allergen-table th, .allergen-table td { padding:8px 6px; }
+  .allergen-scroll-hint { font-size:.84rem; align-items:flex-start; }
   .home-page { padding-top:24px; }
   .home-features { margin-top:24px; }
   .section-compact { margin-top:24px; }
