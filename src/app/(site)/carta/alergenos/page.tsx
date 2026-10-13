@@ -24,49 +24,85 @@ export default async function AllergenChartPage() {
         comunícalo al personal antes de pedir para poder confirmar la elaboración y posibles trazas.
       </p>
 
-      <div className="allergen-scroll-hint" aria-hidden="true">
-        <span>↔</span>
-        <span>Desliza horizontalmente para ver todos los alérgenos. La cabecera y el nombre del plato permanecen visibles.</span>
+      <div className="allergen-actions">
+        <a className="button primary" href="/api/alergenos/pdf">Descargar carta de alérgenos (PDF)</a>
+        <span className="muted">El PDF se genera automáticamente con la carta publicada en ese momento.</span>
       </div>
 
-      <div className="allergen-table-wrap" tabIndex={0} aria-label="Tabla desplazable de alérgenos">
-        <table className="allergen-table">
-          <thead>
-            <tr>
-              <th className="dish-column" scope="col">Plato</th>
-              {ALLERGENS.map((allergen) => (
-                <th key={allergen.value} title={allergen.label} scope="col">
-                  <span>{allergen.value}</span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {categoryOrder.map((category) => {
-              const categoryItems = items.filter((item) => item.category === category);
-              if (!categoryItems.length) return null;
-              return [
-                <tr className="allergen-category-row" key={`${category}-heading`}>
-                  <th className="allergen-category-name" scope="rowgroup">{categoryLabel(category)}</th>
-                  <td className="allergen-category-fill" colSpan={ALLERGENS.length} aria-hidden="true" />
-                </tr>,
-                ...categoryItems.map((item) => {
-                  const set = new Set(item.allergens);
-                  return (
-                    <tr key={item.id}>
-                      <th className="dish-name" scope="row">{item.name}</th>
-                      {ALLERGENS.map((allergen) => (
-                        <td key={allergen.value} aria-label={set.has(allergen.value) ? `Contiene ${allergen.value}` : `No registrado: ${allergen.value}`}>
-                          {set.has(allergen.value) ? <span className="allergen-x">X</span> : <span className="allergen-empty">·</span>}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                }),
-              ];
-            })}
-          </tbody>
-        </table>
+      <div className="allergen-desktop-chart">
+        <div className="allergen-scroll-hint" aria-hidden="true">
+          <span>↔</span>
+          <span>En ordenador puedes desplazarte horizontalmente para consultar todas las columnas.</span>
+        </div>
+
+        <div className="allergen-table-wrap" tabIndex={0} aria-label="Tabla desplazable de alérgenos">
+          <table className="allergen-table">
+            <thead>
+              <tr>
+                <th className="dish-column" scope="col">Plato</th>
+                {ALLERGENS.map((allergen) => (
+                  <th key={allergen.value} title={allergen.label} scope="col">
+                    <span>{allergen.value}</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {categoryOrder.map((category) => {
+                const categoryItems = items.filter((item) => item.category === category);
+                if (!categoryItems.length) return null;
+                return [
+                  <tr className="allergen-category-row" key={`${category}-heading`}>
+                    <th className="allergen-category-name" scope="rowgroup">{categoryLabel(category)}</th>
+                    <td className="allergen-category-fill" colSpan={ALLERGENS.length} aria-hidden="true" />
+                  </tr>,
+                  ...categoryItems.map((item) => {
+                    const set = new Set(item.allergens);
+                    return (
+                      <tr key={item.id}>
+                        <th className="dish-name" scope="row">{item.name}</th>
+                        {ALLERGENS.map((allergen) => (
+                          <td key={allergen.value} aria-label={set.has(allergen.value) ? `Contiene ${allergen.value}` : `No registrado: ${allergen.value}`}>
+                            {set.has(allergen.value) ? <span className="allergen-x">X</span> : <span className="allergen-empty">·</span>}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  }),
+                ];
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="allergen-mobile-list" aria-label="Listado de alérgenos por plato">
+        <div className="status-box warning mobile-allergen-note">
+          En móvil mostramos los alérgenos por plato para que no tengas que mover una tabla muy ancha. Si prefieres la matriz completa, descarga el PDF.
+        </div>
+        {categoryOrder.map((category) => {
+          const categoryItems = items.filter((item) => item.category === category);
+          if (!categoryItems.length) return null;
+          return (
+            <section className="allergen-mobile-category" key={category}>
+              <h2>{categoryLabel(category)}</h2>
+              <div className="allergen-mobile-cards">
+                {categoryItems.map((item) => (
+                  <article className="allergen-mobile-card" key={item.id}>
+                    <h3>{item.name}</h3>
+                    {item.allergens.length ? (
+                      <div className="tag-row">
+                        {item.allergens.map((allergen) => <span className="tag allergen" key={allergen}>{allergen}</span>)}
+                      </div>
+                    ) : (
+                      <p className="muted">No hay alérgenos registrados.</p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </div>
 
       <div className="row-actions" style={{ marginTop: 24 }}>

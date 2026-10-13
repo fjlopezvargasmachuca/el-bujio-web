@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Imagen genérica de Otros">
+<rect width="480" height="300" rx="28" fill="#F0F2F3"/>
+<circle cx="405" cy="55" r="70" fill="#66707A" opacity=".08"/>
+<circle cx="72" cy="252" r="90" fill="#66707A" opacity=".06"/>
+<g fill="none" stroke="#66707A" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"> <path d="M130 105h220v86H130z M165 85h150v20H165z M180 129h120 M180 154h86"/> </g>
+<text x="240" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#66707A">Otros</text>
+<text x="240" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#61717b">Venta El Bujio</text>
+</svg>

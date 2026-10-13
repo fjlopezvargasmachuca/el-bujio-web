@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Imagen genérica de Entrantes">
+<rect width="480" height="300" rx="28" fill="#F6F1E8"/>
+<circle cx="405" cy="55" r="70" fill="#4E6B58" opacity=".08"/>
+<circle cx="72" cy="252" r="90" fill="#4E6B58" opacity=".06"/>
+<g fill="none" stroke="#4E6B58" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"> <path d="M150 98c0-20 16-36 36-36h140c20 0 36 16 36 36v9H150z M132 107h212v16H132z M178 72c16-26 34-26 50 0 M235 72c16-26 34-26 50 0"/> </g>
+<text x="240" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#4E6B58">Entrantes</text>
+<text x="240" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#61717b">Venta El Bujio</text>
+</svg>

@@ -46,6 +46,42 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="section-compact place-gallery-section" aria-labelledby="lugar-title">
+        <div className="section-head place-gallery-head">
+          <div>
+            <div className="eyebrow">Benamahoma · Sierra de Grazalema</div>
+            <h2 id="lugar-title">Un lugar para disfrutar sin prisas</h2>
+            <p>La venta se encuentra en un entorno natural privilegiado, junto a Benamahoma y muy cerca del sendero del río Majaceite.</p>
+          </div>
+        </div>
+        <div className="place-gallery">
+          <figure className="place-photo-card">
+            <img
+              src="https://turismo.grazalema.es/images/images/FOTOS/GUIA/2020/COMER/101-El-Bujio-01.jpg"
+              alt="Exterior y terraza de Venta El Bujio en Benamahoma"
+              loading="lazy"
+            />
+            <figcaption>
+              <strong>La venta y su terraza</strong>
+              <span>Un rincón tradicional a la entrada de Benamahoma.</span>
+              <a href="https://turismo.grazalema.es/index.php/la-guia/comer/336-101-venta-el-bujio" target="_blank" rel="noreferrer">Foto: Turismo de Grazalema</a>
+            </figcaption>
+          </figure>
+          <figure className="place-photo-card">
+            <img
+              src="https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/.Spain%2C_Andalusia%2C_Benamahoma_%2803%29.jpg/1280px-.Spain%2C_Andalusia%2C_Benamahoma_%2803%29.jpg"
+              alt="Vista panorámica de Benamahoma y la Sierra de Grazalema"
+              loading="lazy"
+            />
+            <figcaption>
+              <strong>Benamahoma y su entorno</strong>
+              <span>Naturaleza, pueblo blanco y Sierra de Grazalema.</span>
+              <a href="https://commons.wikimedia.org/wiki/File:.Spain,_Andalusia,_Benamahoma_(03).jpg" target="_blank" rel="noreferrer">Foto: Vincent van Zeijst · CC BY-SA 4.0</a>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section className="home-features" aria-labelledby="sabores-title">
         <Link className="feature-heading" href="/carta">
           <div className="eyebrow">El Bujio</div>

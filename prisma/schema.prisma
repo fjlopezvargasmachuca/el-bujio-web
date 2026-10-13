@@ -107,6 +107,8 @@ model MenuItem {
   priceTapaCents  Int?
   priceMediaCents Int?
   pricePlatoCents Int?
+  imageData       String?      @db.Text
+  imageMime       String?
   active          Boolean      @default(true)
   sortOrder       Int          @default(0)
   createdAt       DateTime     @default(now())

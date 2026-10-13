@@ -10,7 +10,28 @@ export const dynamic = "force-dynamic";
 const categoryOrder = ["ENTRANTES", "PESCADO", "CARNES", "BOCADILLOS", "POSTRES", "OTROS"];
 
 export default async function CartaPage() {
-  const items = await prisma.menuItem.findMany({ where: { active: true }, orderBy: [{ sortOrder: "asc" }, { name: "asc" }] });
+  const rawItems = await prisma.menuItem.findMany({
+    where: { active: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    select: ({
+      id: true,
+      name: true,
+      description: true,
+      category: true,
+      ingredients: true,
+      allergens: true,
+      priceTapaCents: true,
+      priceMediaCents: true,
+      pricePlatoCents: true,
+      imageMime: true,
+      updatedAt: true,
+    } as any),
+  }) as any[];
+  const items = rawItems.map((item) => ({
+    ...item,
+    hasImage: Boolean(item.imageMime),
+    imageVersion: item.updatedAt instanceof Date ? item.updatedAt.getTime() : String(item.updatedAt ?? ""),
+  }));
   return (
     <div className="page">
       <div className="eyebrow">Nuestra selección</div>

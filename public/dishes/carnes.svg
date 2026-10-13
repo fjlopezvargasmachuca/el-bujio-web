@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Imagen genérica de Carnes">
+<rect width="480" height="300" rx="28" fill="#F7EFEB"/>
+<circle cx="405" cy="55" r="70" fill="#8C4F3D" opacity=".08"/>
+<circle cx="72" cy="252" r="90" fill="#8C4F3D" opacity=".06"/>
+<g fill="none" stroke="#8C4F3D" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"> <path d="M140 92h170c29 0 52 23 52 52s-23 52-52 52H140c-25 0-45-20-45-45v-14c0-25 20-45 45-45z M138 122h173 M138 151h145"/> </g>
+<text x="240" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#8C4F3D">Carnes</text>
+<text x="240" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#61717b">Venta El Bujio</text>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Imagen genérica de Pescado">
+<rect width="480" height="300" rx="28" fill="#EEF6F7"/>
+<circle cx="405" cy="55" r="70" fill="#3E6D7A" opacity=".08"/>
+<circle cx="72" cy="252" r="90" fill="#3E6D7A" opacity=".06"/>
+<g fill="none" stroke="#3E6D7A" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"> <path d="M115 118c55-70 153-70 215 0-62 70-160 70-215 0z M328 118l64-50v100z M190 104c12 0 12 18 0 18s-12-18 0-18z"/> </g>
+<text x="240" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#3E6D7A">Pescado</text>
+<text x="240" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#61717b">Venta El Bujio</text>
+</svg>

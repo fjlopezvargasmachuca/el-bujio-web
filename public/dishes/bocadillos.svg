@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Imagen genérica de Bocadillos">
+<rect width="480" height="300" rx="28" fill="#FBF4E9"/>
+<circle cx="405" cy="55" r="70" fill="#A56B38" opacity=".08"/>
+<circle cx="72" cy="252" r="90" fill="#A56B38" opacity=".06"/>
+<g fill="none" stroke="#A56B38" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"> <path d="M108 144c34-70 232-70 266 0z M103 149h276v31H103z M130 128l37 15 37-18 42 18 42-18 38 18"/> </g>
+<text x="240" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#A56B38">Bocadillos</text>
+<text x="240" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#61717b">Venta El Bujio</text>
+</svg>

@@ -37,6 +37,39 @@ function menuCategory(value: string) {
   return Object.values(MenuCategory).includes(value as MenuCategory) ? (value as MenuCategory) : MenuCategory.OTROS;
 }
 
+
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const MAX_IMAGE_BYTES = 1_500_000;
+
+async function readMenuImage(formData: FormData, current?: { imageData: string | null; imageMime: string | null }) {
+  if (formData.get("removeImage") === "on") return { imageData: null, imageMime: null, error: null as string | null };
+
+  const candidate = formData.get("image");
+  if (!(candidate instanceof File) || candidate.size === 0) {
+    return {
+      imageData: current?.imageData ?? null,
+      imageMime: current?.imageMime ?? null,
+      error: null as string | null,
+    };
+  }
+
+  if (candidate.size > MAX_IMAGE_BYTES) {
+    return { imageData: current?.imageData ?? null, imageMime: current?.imageMime ?? null, error: "size" };
+  }
+
+  const buffer = Buffer.from(await candidate.arrayBuffer());
+  let detectedMime: string | null = null;
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) detectedMime = "image/jpeg";
+  if (buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) detectedMime = "image/png";
+  if (buffer.length >= 12 && buffer.subarray(0, 4).toString("ascii") === "RIFF" && buffer.subarray(8, 12).toString("ascii") === "WEBP") detectedMime = "image/webp";
+
+  if (!detectedMime || !ALLOWED_IMAGE_TYPES.has(detectedMime)) {
+    return { imageData: current?.imageData ?? null, imageMime: current?.imageMime ?? null, error: "format" };
+  }
+
+  return { imageData: buffer.toString("base64"), imageMime: detectedMime, error: null as string | null };
+}
+
 function specialType(value: string) {
   return value === SpecialType.OFERTA ? SpecialType.OFERTA : SpecialType.MENU_DIA;
 }
@@ -58,8 +91,10 @@ export async function logoutAdmin() {
 
 export async function createMenuItem(formData: FormData) {
   await requireAdmin();
+  const image = await readMenuImage(formData);
+  if (image.error) redirect(`/admin/carta?status=image_${image.error}`);
   await prisma.menuItem.create({
-    data: {
+    data: ({
       name: requiredName(formData),
       description: str(formData, "description", 1200) || null,
       category: menuCategory(str(formData, "category")),
@@ -68,9 +103,11 @@ export async function createMenuItem(formData: FormData) {
       priceTapaCents: parseEuroToCents(formData.get("priceTapa")),
       priceMediaCents: parseEuroToCents(formData.get("priceMedia")),
       pricePlatoCents: parseEuroToCents(formData.get("pricePlato")),
+      imageData: image.imageData,
+      imageMime: image.imageMime,
       active: formData.get("active") === "on",
       sortOrder: await nextMenuSortOrder(),
-    },
+    }) as any,
   });
   revalidatePath("/");
   revalidatePath("/carta");
@@ -81,9 +118,13 @@ export async function createMenuItem(formData: FormData) {
 
 export async function updateMenuItem(id: string, formData: FormData) {
   await requireAdmin();
+  const current = await prisma.menuItem.findUnique({ where: { id } }) as any;
+  if (!current) return;
+  const image = await readMenuImage(formData, current);
+  if (image.error) redirect(`/admin/carta?status=image_${image.error}`);
   await prisma.menuItem.update({
     where: { id },
-    data: {
+    data: ({
       name: requiredName(formData),
       description: str(formData, "description", 1200) || null,
       category: menuCategory(str(formData, "category")),
@@ -92,8 +133,10 @@ export async function updateMenuItem(id: string, formData: FormData) {
       priceTapaCents: parseEuroToCents(formData.get("priceTapa")),
       priceMediaCents: parseEuroToCents(formData.get("priceMedia")),
       pricePlatoCents: parseEuroToCents(formData.get("pricePlato")),
+      imageData: image.imageData,
+      imageMime: image.imageMime,
       active: formData.get("active") === "on",
-    },
+    }) as any,
   });
   revalidatePath("/");
   revalidatePath("/carta");
