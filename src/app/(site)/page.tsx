@@ -68,7 +68,6 @@ export default async function HomePage() {
       <section className="home-intro">
         <div className="home-intro-copy">
           <div className="eyebrow">Venta tradicional · cocina casera · Benamahoma</div>
-          <h1>El Bujio</h1>
           <p>
             Cocina tradicional, producto cercano y platos de siempre. Consulta lo que tenemos preparado hoy
             y encuentra toda la información de la venta antes de venir a vernos.

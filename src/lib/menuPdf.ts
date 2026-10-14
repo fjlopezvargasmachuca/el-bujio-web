@@ -25,7 +25,7 @@ const PAGE_H = 841.89;
 const MARGIN = 42;
 const CONTENT_W = PAGE_W - MARGIN * 2;
 const TOP = 742;
-const BOTTOM = 106;
+const BOTTOM = 118;
 const CATEGORY_H = 28;
 const LAND_ITEM_H = 46;
 
@@ -257,34 +257,125 @@ function drawAllergenIcon(page: PdfPage, allergen: string, x: number, y: number,
   }
 }
 
+function drawCategoryArtwork(page: PdfPage, category: string, x: number, y: number, size = 38) {
+  const c: RGB = [0.84, 0.74, 0.61];
+  const w = Math.max(0.75, size / 50);
+  const cx = x + size / 2;
+  const cy = y + size / 2;
+
+  switch (category) {
+    case "ENTRANTES": {
+      strokeEllipse(page, cx, cy, size * 0.34, size * 0.16, c, w);
+      colorLine(page, x + size * 0.18, y + size * 0.39, x + size * 0.82, y + size * 0.39, c, w);
+      colorLine(page, x + size * 0.37, y + size * 0.58, x + size * 0.3, y + size * 0.78, c, w);
+      colorLine(page, x + size * 0.62, y + size * 0.58, x + size * 0.72, y + size * 0.8, c, w);
+      break;
+    }
+    case "PESCADO": {
+      strokeEllipse(page, cx - size * 0.06, cy, size * 0.29, size * 0.15, c, w);
+      colorLine(page, x + size * 0.72, cy, x + size * 0.9, y + size * 0.68, c, w);
+      colorLine(page, x + size * 0.72, cy, x + size * 0.9, y + size * 0.32, c, w);
+      fillCircle(page, x + size * 0.36, y + size * 0.55, size * 0.025, c);
+      break;
+    }
+    case "CARNES": {
+      strokeEllipse(page, cx, cy, size * 0.34, size * 0.21, c, w);
+      colorLine(page, x + size * 0.28, y + size * 0.42, x + size * 0.68, y + size * 0.62, c, w);
+      colorLine(page, x + size * 0.3, y + size * 0.6, x + size * 0.66, y + size * 0.39, c, w);
+      break;
+    }
+    case "BOCADILLOS": {
+      page.push(`q ${c[0]} ${c[1]} ${c[2]} RG ${w} w ${(x + size * 0.18).toFixed(2)} ${(y + size * 0.46).toFixed(2)} m ${(x + size * 0.82).toFixed(2)} ${(y + size * 0.46).toFixed(2)} l ${(x + size * 0.72).toFixed(2)} ${(y + size * 0.67).toFixed(2)} ${(x + size * 0.28).toFixed(2)} ${(y + size * 0.67).toFixed(2)} ${(x + size * 0.18).toFixed(2)} ${(y + size * 0.46).toFixed(2)} c S Q`);
+      colorLine(page, x + size * 0.22, y + size * 0.39, x + size * 0.78, y + size * 0.39, c, w);
+      break;
+    }
+    case "POSTRES": {
+      page.push(`q ${c[0]} ${c[1]} ${c[2]} RG ${w} w ${(x + size * 0.28).toFixed(2)} ${(y + size * 0.28).toFixed(2)} m ${(x + size * 0.7).toFixed(2)} ${(y + size * 0.28).toFixed(2)} l ${(x + size * 0.6).toFixed(2)} ${(y + size * 0.68).toFixed(2)} l ${(x + size * 0.36).toFixed(2)} ${(y + size * 0.68).toFixed(2)} l h S Q`);
+      fillCircle(page, x + size * 0.5, y + size * 0.76, size * 0.045, c);
+      break;
+    }
+    case "BEBIDAS": {
+      page.push(`q ${c[0]} ${c[1]} ${c[2]} RG ${w} w ${(x + size * 0.26).toFixed(2)} ${(y + size * 0.24).toFixed(2)} ${(size * 0.25).toFixed(2)} ${(size * 0.5).toFixed(2)} re S Q`);
+      colorLine(page, x + size * 0.57, y + size * 0.26, x + size * 0.73, y + size * 0.67, c, w);
+      colorLine(page, x + size * 0.73, y + size * 0.67, x + size * 0.82, y + size * 0.25, c, w);
+      break;
+    }
+    case "VINOS": {
+      strokeEllipse(page, x + size * 0.39, y + size * 0.61, size * 0.18, size * 0.23, c, w);
+      colorLine(page, x + size * 0.39, y + size * 0.38, x + size * 0.39, y + size * 0.2, c, w);
+      colorLine(page, x + size * 0.24, y + size * 0.2, x + size * 0.54, y + size * 0.2, c, w);
+      page.push(`q ${c[0]} ${c[1]} ${c[2]} RG ${w} w ${(x + size * 0.63).toFixed(2)} ${(y + size * 0.2).toFixed(2)} ${(size * 0.16).toFixed(2)} ${(size * 0.54).toFixed(2)} re S Q`);
+      break;
+    }
+    case "CHACINA": {
+      strokeEllipse(page, cx, cy, size * 0.34, size * 0.2, c, w);
+      strokeEllipse(page, cx, cy, size * 0.21, size * 0.11, c, w);
+      colorLine(page, x + size * 0.18, cy, x + size * 0.82, cy, c, w * 0.8);
+      break;
+    }
+    case "LAND": {
+      page.push(`q ${c[0]} ${c[1]} ${c[2]} RG ${w} w ${(x + size * 0.28).toFixed(2)} ${(y + size * 0.24).toFixed(2)} ${(size * 0.42).toFixed(2)} ${(size * 0.45).toFixed(2)} re S Q`);
+      colorLine(page, x + size * 0.25, y + size * 0.72, x + size * 0.73, y + size * 0.72, c, w);
+      fillEllipse(page, x + size * 0.4, y + size * 0.83, size * 0.08, size * 0.05, c);
+      fillEllipse(page, x + size * 0.6, y + size * 0.82, size * 0.08, size * 0.05, c);
+      break;
+    }
+    default: {
+      strokeEllipse(page, cx, cy, size * 0.31, size * 0.2, c, w);
+      colorLine(page, x + size * 0.27, y + size * 0.5, x + size * 0.73, y + size * 0.5, c, w);
+    }
+  }
+}
+
 function drawHeader(page: PdfPage) {
   image(page, MARGIN, PAGE_H - 91, 47, 47);
-  text(page, MARGIN + 60, PAGE_H - 59, "VENTA EL BUJIO", 18, true, INK);
-  text(page, MARGIN + 60, PAGE_H - 78, "CARTA", 10, true, EARTH);
+  text(page, MARGIN + 60, PAGE_H - 67, "VENTA EL BUJIO", 18, true, INK);
   line(page, MARGIN, PAGE_H - 103, PAGE_W - MARGIN, PAGE_H - 103, 0.72);
 }
 
-function drawFooter(page: PdfPage, pageNumber: number, totalPages: number) {
-  line(page, MARGIN, 94, PAGE_W - MARGIN, 94, 0.78);
-  text(page, MARGIN, 82, "Alérgenos: confirma siempre con el personal la elaboración y posibles trazas.", 6.2, false, MUTED);
+function drawCover(page: PdfPage, phone: string) {
+  fillRect(page, 0, 0, PAGE_W, PAGE_H, [0.02, 0.018, 0.016]);
+  image(page, (PAGE_W - 150) / 2, 564, 150, 150);
+  centeredText(page, 510, "VENTA EL BUJIO", 29, true, [0.96, 0.92, 0.86]);
+  centeredText(page, 476, "SABORES DE SIEMPRE", 13, true, [0.84, 0.64, 0.38]);
+  centeredText(page, 448, "Cocina tradicional · producto cercano · Benamahoma", 9.4, false, [0.83, 0.76, 0.67]);
+  colorLine(page, 118, 416, PAGE_W - 118, 416, [0.42, 0.31, 0.23], 0.8);
 
-  const cols = 7;
-  const cellW = CONTENT_W / cols;
-  ALLERGENS.forEach((allergen, index) => {
-    const row = Math.floor(index / cols);
-    const col = index % cols;
-    const x = MARGIN + col * cellW;
-    const y = row === 0 ? 56 : 36;
-    drawAllergenIcon(page, allergen.value, x, y - 3, 10, false);
-    text(page, x + 12, y, LEGEND_LABELS[allergen.value] ?? allergen.value, 5.2, false, MUTED);
-  });
+  drawCategoryArtwork(page, "ENTRANTES", 150, 335, 48);
+  drawCategoryArtwork(page, "PESCADO", 222, 335, 48);
+  drawCategoryArtwork(page, "CARNES", 294, 335, 48);
+  drawCategoryArtwork(page, "VINOS", 366, 335, 48);
 
-  centeredText(page, 14, `Página ${pageNumber} de ${totalPages}`, 6.8, true, MUTED);
+  centeredText(page, 286, "Nuestra cocina, bebidas, vinos, chacina y productos de la tierra", 9, false, [0.88, 0.82, 0.73]);
+  centeredText(page, 255, `Para hacer reservas puede contactar al teléfono: ${phone}`, 9.2, true, [0.96, 0.92, 0.86]);
+  centeredText(page, 230, "Los ingredientes y alérgenos se muestran junto a cada elaboración cuando están registrados.", 7.3, false, [0.73, 0.66, 0.59]);
 }
 
-function drawCategory(page: PdfPage, y: number, label: string) {
+function drawFooter(page: PdfPage, pageNumber: number, phone: string, withLegend = true) {
+  if (withLegend) {
+    line(page, MARGIN, 104, PAGE_W - MARGIN, 104, 0.78);
+    text(page, MARGIN, 93, `Para hacer reservas puede contactar al teléfono: ${phone}`, 6.4, true, MUTED);
+    text(page, MARGIN, 81, "Alérgenos: confirma siempre con el personal la elaboración y posibles trazas.", 6.1, false, MUTED);
+
+    const cols = 7;
+    const cellW = CONTENT_W / cols;
+    ALLERGENS.forEach((allergen, index) => {
+      const row = Math.floor(index / cols);
+      const col = index % cols;
+      const x = MARGIN + col * cellW;
+      const y = row === 0 ? 56 : 36;
+      drawAllergenIcon(page, allergen.value, x, y - 3, 10, false);
+      text(page, x + 12, y, LEGEND_LABELS[allergen.value] ?? allergen.value, 5.2, false, MUTED);
+    });
+  }
+
+  centeredText(page, 13, String(pageNumber), 7.2, true, withLegend ? MUTED : [0.78, 0.69, 0.6]);
+}
+
+function drawCategory(page: PdfPage, y: number, label: string, category: string) {
   fillRect(page, MARGIN, y - CATEGORY_H + 4, CONTENT_W, CATEGORY_H - 4, INK);
-  text(page, MARGIN + 10, y - 14, label.toUpperCase(), 9.5, true, EARTH_LIGHT);
+  text(page, MARGIN + 10, y - 15, label.toUpperCase(), 9.5, true, EARTH_LIGHT);
+  drawCategoryArtwork(page, category, PAGE_W - MARGIN - 54, y - CATEGORY_H + 3, 42);
 }
 
 function menuItemHeight(item: MenuPdfItem) {
@@ -369,10 +460,20 @@ function buildPdf(objects: PdfObject[]) {
   return Buffer.concat(chunks);
 }
 
-export function createMenuPdf(items: MenuPdfItem[], landProducts: LandPdfItem[]) {
+export function createMenuPdf(
+  items: MenuPdfItem[],
+  landProducts: LandPdfItem[],
+  options: { phone?: string } = {},
+) {
+  const phone = cleanText(options.phone || "956 71 60 77");
   const pages: PdfPage[] = [];
   let page: PdfPage = [];
   let y = TOP;
+
+  // Portada independiente.
+  const cover: PdfPage = [];
+  drawCover(cover, phone);
+  pages.push(cover);
 
   const startPage = () => {
     page = [];
@@ -387,6 +488,8 @@ export function createMenuPdf(items: MenuPdfItem[], landProducts: LandPdfItem[])
     startPage();
   };
   const available = () => y - BOTTOM;
+  const pageCapacity = TOP - BOTTOM;
+  const isFreshPage = () => Math.abs(y - TOP) < 0.01;
 
   startPage();
 
@@ -394,19 +497,26 @@ export function createMenuPdf(items: MenuPdfItem[], landProducts: LandPdfItem[])
     const group = items.filter((item) => item.category === category);
     if (!group.length) continue;
 
-    const firstHeights = group.slice(0, Math.min(2, group.length)).reduce((sum, item) => sum + menuItemHeight(item), 0);
-    if (available() < CATEGORY_H + firstHeights) newPage();
-
     const label = categoryLabel(category);
-    drawCategory(page, y, label);
+    const totalCategoryHeight = CATEGORY_H + group.reduce((sum, item) => sum + menuItemHeight(item), 0) + 8;
+
+    // Si la categoría completa cabe en una hoja, nunca se parte entre dos.
+    if (totalCategoryHeight <= pageCapacity && available() < totalCategoryHeight) {
+      newPage();
+    } else if (totalCategoryHeight > pageCapacity && !isFreshPage()) {
+      // Las categorías muy largas empiezan siempre en hoja nueva para evitar dejar solo uno o dos productos al final.
+      newPage();
+    }
+
+    drawCategory(page, y, label, category);
     y -= CATEGORY_H;
 
-    for (let index = 0; index < group.length; index += 1) {
-      const item = group[index];
+    for (const item of group) {
       const height = menuItemHeight(item);
       if (available() < height) {
         newPage();
-        drawCategory(page, y, `${label} - continuación`);
+        // Si una categoría es demasiado larga para una sola hoja, repetimos únicamente su título, sin "continuación".
+        drawCategory(page, y, label, category);
         y -= CATEGORY_H;
       }
       y -= drawMenuItem(page, y, item);
@@ -415,15 +525,20 @@ export function createMenuPdf(items: MenuPdfItem[], landProducts: LandPdfItem[])
   }
 
   if (landProducts.length) {
-    const required = CATEGORY_H + Math.min(2, landProducts.length) * LAND_ITEM_H;
-    if (available() < required) newPage();
-    drawCategory(page, y, "Productos de la tierra");
+    const totalLandHeight = CATEGORY_H + landProducts.length * LAND_ITEM_H + 8;
+    if (totalLandHeight <= pageCapacity && available() < totalLandHeight) {
+      newPage();
+    } else if (totalLandHeight > pageCapacity && !isFreshPage()) {
+      newPage();
+    }
+
+    drawCategory(page, y, "Productos de la tierra", "LAND");
     y -= CATEGORY_H;
 
     for (const item of landProducts) {
       if (available() < LAND_ITEM_H) {
         newPage();
-        drawCategory(page, y, "Productos de la tierra - continuación");
+        drawCategory(page, y, "Productos de la tierra", "LAND");
         y -= CATEGORY_H;
       }
       drawLandItem(page, y, item);
@@ -432,7 +547,7 @@ export function createMenuPdf(items: MenuPdfItem[], landProducts: LandPdfItem[])
   }
 
   endPage();
-  pages.forEach((pageCommands, index) => drawFooter(pageCommands, index + 1, pages.length));
+  pages.forEach((pageCommands, index) => drawFooter(pageCommands, index + 1, phone, index > 0));
 
   const logo = Buffer.from(PDF_LOGO_JPEG_BASE64, "base64");
 

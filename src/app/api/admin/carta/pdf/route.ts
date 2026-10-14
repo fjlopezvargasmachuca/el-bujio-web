@@ -9,15 +9,25 @@ export async function GET() {
   const session = await getAdminSession();
   if (!session) return new Response("No autorizado", { status: 401 });
 
-  const [items, landProducts] = await Promise.all([
+  const [items, landProducts, settings] = await Promise.all([
     prisma.menuItem.findMany({
       where: { active: true },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
       select: ({
-        name: true, category: true, description: true, ingredients: true, allergens: true,
-        priceTapaCents: true, priceMediaCents: true, pricePlatoCents: true,
-        priceUnidadCents: true, priceCopaCents: true, priceBotellaCents: true,
-        price100gCents: true, priceCuartoKgCents: true, priceKiloCents: true,
+        name: true,
+        category: true,
+        description: true,
+        ingredients: true,
+        allergens: true,
+        priceTapaCents: true,
+        priceMediaCents: true,
+        pricePlatoCents: true,
+        priceUnidadCents: true,
+        priceCopaCents: true,
+        priceBotellaCents: true,
+        price100gCents: true,
+        priceCuartoKgCents: true,
+        priceKiloCents: true,
       } as any),
     }),
     (prisma as any).landProduct.findMany({
@@ -25,9 +35,16 @@ export async function GET() {
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
       select: { name: true, description: true, priceCents: true },
     }),
+    prisma.siteSettings.findUnique({
+      where: { id: 1 },
+      select: { phone: true },
+    }),
   ]);
 
-  const pdf = createMenuPdf(items as any, landProducts as any);
+  const pdf = createMenuPdf(items as any, landProducts as any, {
+    phone: settings?.phone ?? "956 71 60 77",
+  });
+
   return new Response(new Uint8Array(pdf), {
     status: 200,
     headers: {
