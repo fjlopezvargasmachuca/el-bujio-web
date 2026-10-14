@@ -10,11 +10,11 @@ Este proyecto usa renderizado en servidor, Server Actions y PostgreSQL, por lo q
 4. Cuando solicite variables no sincronizadas, introduce:
 
 ```text
-ADMIN_PASSWORD = Bujio2026!
+ADMIN_PASSWORD = CAMBIA_ESTA_PASSWORD
 NEXT_PUBLIC_SITE_URL = https://TU-SERVICIO.onrender.com
 ```
 
-Para preproducción puedes usar `Bujio2026!`. Antes de producción real cambia la contraseña.
+Para preproducción puedes usar `CAMBIA_ESTA_PASSWORD`. Antes de producción real cambia la contraseña.
 
 5. Confirma la creación del Web Service y PostgreSQL.
 6. El build ejecuta:
@@ -65,7 +65,7 @@ NODE_ENV=production
 DATABASE_URL=<Internal Database URL de Render>
 AUTH_SECRET=<secreto largo aleatorio>
 ADMIN_EMAIL=admin@elbujio.es
-ADMIN_PASSWORD=Bujio2026!
+ADMIN_PASSWORD=CAMBIA_ESTA_PASSWORD
 NEXT_PUBLIC_SITE_URL=https://TU-SERVICIO.onrender.com
 ```
 

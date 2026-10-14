@@ -6,6 +6,7 @@ import { logoutAdmin } from "./actions";
 const nav = [
   ["/admin", "Resumen"],
   ["/admin/carta", "Carta"],
+  ["/admin/productos-tierra", "Productos de la tierra"],
   ["/admin/especiales", "Menú y ofertas"],
   ["/admin/contacto", "Contacto"],
 ] as const;

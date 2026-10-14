@@ -7,7 +7,7 @@ import { categoryLabel } from "@/lib/format";
 export const metadata: Metadata = { title: "Carta" };
 export const dynamic = "force-dynamic";
 
-const categoryOrder = ["ENTRANTES", "PESCADO", "CARNES", "BOCADILLOS", "POSTRES", "OTROS"];
+const categoryOrder = ["ENTRANTES", "CHACINA", "PESCADO", "CARNES", "BOCADILLOS", "POSTRES", "BEBIDAS", "VINOS", "OTROS"];
 
 export default async function CartaPage() {
   const rawItems = await prisma.menuItem.findMany({
@@ -23,6 +23,12 @@ export default async function CartaPage() {
       priceTapaCents: true,
       priceMediaCents: true,
       pricePlatoCents: true,
+      priceUnidadCents: true,
+      priceCopaCents: true,
+      priceBotellaCents: true,
+      price100gCents: true,
+      priceCuartoKgCents: true,
+      priceKiloCents: true,
       imageMime: true,
       updatedAt: true,
     } as any),

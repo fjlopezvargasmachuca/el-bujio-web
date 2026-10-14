@@ -15,6 +15,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           <div>© {new Date().getFullYear()} El Bujio · Venta</div>
           <div className="row-actions footer-links">
             <Link href="/carta">Carta</Link>
+            <Link href="/productos-de-la-tierra">Productos de la tierra</Link>
             <Link href="/contacto">Contacto</Link>
             <Link href="/admin/login">Administración</Link>
           </div>

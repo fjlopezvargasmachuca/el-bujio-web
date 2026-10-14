@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { PricePills } from "@/components/PricePills";
 import { dishImageSrc } from "@/lib/dishImages";
+import type { MenuPriceRecord } from "@/lib/format";
 
-type Dish = {
+type Dish = MenuPriceRecord & {
   name: string;
   description?: string | null;
   id: string;
@@ -13,14 +14,22 @@ type Dish = {
   imageVersion?: string | number | null;
   ingredients: string[];
   allergens: string[];
-  priceTapaCents?: number | null;
-  priceMediaCents?: number | null;
-  pricePlatoCents?: number | null;
 };
 
 export function DishCard({ item }: { item: Dish }) {
   const [open, setOpen] = useState(false);
   const imageSrc = dishImageSrc(item);
+  const prices = {
+    priceTapaCents: item.priceTapaCents,
+    priceMediaCents: item.priceMediaCents,
+    pricePlatoCents: item.pricePlatoCents,
+    priceUnidadCents: item.priceUnidadCents,
+    priceCopaCents: item.priceCopaCents,
+    priceBotellaCents: item.priceBotellaCents,
+    price100gCents: item.price100gCents,
+    priceCuartoKgCents: item.priceCuartoKgCents,
+    priceKiloCents: item.priceKiloCents,
+  };
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
@@ -33,17 +42,17 @@ export function DishCard({ item }: { item: Dish }) {
       <button className="card dish-card" onClick={() => setOpen(true)}>
         <div className="dish-top">
           <h3>{item.name}</h3>
-          <span className="orange">Ver detalle →</span>
+          <span className="accent">Ver detalle →</span>
         </div>
         {item.description ? <p>{item.description}</p> : null}
-        <PricePills tapa={item.priceTapaCents} media={item.priceMediaCents} plato={item.pricePlatoCents} />
+        <PricePills {...prices} />
       </button>
       {open ? (
         <div className="modal-backdrop" role="presentation" onMouseDown={() => setOpen(false)}>
           <section className="modal dish-modal" role="dialog" aria-modal="true" aria-label={`Detalle de ${item.name}`} onMouseDown={(e) => e.stopPropagation()}>
             <div className="modal-head">
               <div>
-                <div className="eyebrow">Detalle del plato</div>
+                <div className="eyebrow">Detalle</div>
                 <h2>{item.name}</h2>
               </div>
               <button className="icon-button" aria-label="Cerrar" onClick={() => setOpen(false)}>×</button>
@@ -52,7 +61,7 @@ export function DishCard({ item }: { item: Dish }) {
               <img className="dish-detail-image" src={imageSrc} alt={`Imagen de ${item.name}`} />
             </div>
             {item.description ? <p className="muted">{item.description}</p> : null}
-            <PricePills tapa={item.priceTapaCents} media={item.priceMediaCents} plato={item.pricePlatoCents} />
+            <PricePills {...prices} />
             <div className="hr" />
             <h3>Ingredientes</h3>
             <div className="tag-row" style={{ marginTop: 10 }}>

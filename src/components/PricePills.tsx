@@ -1,15 +1,12 @@
-import { formatPrice } from "@/lib/format";
+import { formatPrice, menuPricePairs, type MenuPriceRecord } from "@/lib/format";
 
-export function PricePills({ tapa, media, plato }: { tapa?: number | null; media?: number | null; plato?: number | null }) {
-  const prices = [
-    ["Tapa", tapa],
-    ["Media", media],
-    ["Plato", plato],
-  ] as const;
+export function PricePills(props: MenuPriceRecord) {
+  const prices = menuPricePairs(props).filter(([, value]) => value != null);
+  if (!prices.length) return null;
 
   return (
     <div className="price-row">
-      {prices.filter(([, value]) => value != null).map(([label, value]) => (
+      {prices.map(([label, value]) => (
         <span className="price-pill" key={label}><strong>{label}:</strong> {formatPrice(value)}</span>
       ))}
     </div>

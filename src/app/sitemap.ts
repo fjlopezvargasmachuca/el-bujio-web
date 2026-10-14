@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
-  return ["", "/carta", "/carta/alergenos", "/menu-del-dia", "/ofertas", "/contacto"].map((path) => ({
+  return ["", "/carta", "/carta/alergenos", "/menu-del-dia", "/productos-de-la-tierra", "/ofertas", "/contacto"].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
     changeFrequency: path === "/menu-del-dia" || path === "/ofertas" ? "daily" : "weekly",

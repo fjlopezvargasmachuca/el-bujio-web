@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { reorderMenuItems, reorderSpecialItems } from "@/app/admin/(protected)/actions";
+import { reorderLandProducts, reorderMenuItems, reorderSpecialItems } from "@/app/admin/(protected)/actions";
 
 type Item = {
   id: string;
@@ -14,7 +14,7 @@ export function SortableOrderList({
   kind,
 }: {
   items: Item[];
-  kind: "menu" | "special";
+  kind: "menu" | "special" | "land";
 }) {
   const [ordered, setOrdered] = useState(items);
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -30,6 +30,8 @@ export function SortableOrderList({
       const ids = next.map((item) => item.id);
       if (kind === "menu") {
         await reorderMenuItems(ids);
+      } else if (kind === "land") {
+        await reorderLandProducts(ids);
       } else {
         await reorderSpecialItems(ids);
       }

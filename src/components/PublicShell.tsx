@@ -8,6 +8,7 @@ const nav = [
   ["/", "Inicio", "home"],
   ["/menu-del-dia", "Menú del día", "menu"],
   ["/carta", "Carta", "card"],
+  ["/productos-de-la-tierra", "Productos de la tierra", "bag"],
   ["/ofertas", "Ofertas", "tag"],
   ["/contacto", "Contacto", "pin"],
 ] as const;
@@ -18,6 +19,7 @@ function NavIcon({ name }: { name: string }) {
   if (name === "menu") return <svg {...common}><path d="M4 6h16M4 12h16M4 18h10"/></svg>;
   if (name === "card") return <svg {...common}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h10M7 13h6"/></svg>;
   if (name === "tag") return <svg {...common}><path d="M20 13 13 20l-9-9V4h7l9 9Z"/><circle cx="8.5" cy="8.5" r="1"/></svg>;
+  if (name === "bag") return <svg {...common}><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>;
   return <svg {...common}><path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg>;
 }
 

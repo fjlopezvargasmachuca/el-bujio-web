@@ -32,9 +32,38 @@ export function categoryLabel(category: string) {
     CARNES: "Carnes",
     BOCADILLOS: "Bocadillos",
     POSTRES: "Postres",
+    BEBIDAS: "Bebidas",
+    VINOS: "Vinos",
+    CHACINA: "Chacina",
     OTROS: "Otros",
   };
   return labels[category] ?? category;
+}
+
+export type MenuPriceRecord = {
+  priceTapaCents?: number | null;
+  priceMediaCents?: number | null;
+  pricePlatoCents?: number | null;
+  priceUnidadCents?: number | null;
+  priceCopaCents?: number | null;
+  priceBotellaCents?: number | null;
+  price100gCents?: number | null;
+  priceCuartoKgCents?: number | null;
+  priceKiloCents?: number | null;
+};
+
+export function menuPricePairs(item: MenuPriceRecord) {
+  return [
+    ["Tapa", item.priceTapaCents],
+    ["Media", item.priceMediaCents],
+    ["Plato", item.pricePlatoCents],
+    ["Unidad", item.priceUnidadCents],
+    ["Copa", item.priceCopaCents],
+    ["Botella", item.priceBotellaCents],
+    ["100 g", item.price100gCents],
+    ["1/4 kg", item.priceCuartoKgCents],
+    ["Kilo", item.priceKiloCents],
+  ] as const;
 }
 
 export function parseOpeningHours(raw?: string | null) {

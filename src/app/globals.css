@@ -804,3 +804,167 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
 @media (max-width:760px) {
   .admin-home-gallery-grid { grid-template-columns:1fr; }
 }
+
+/* v1.11 · identidad más cercana al rótulo: negro, beige y tonos tierra */
+.site-shell {
+  --bg:#0c0a08;
+  --bg-soft:#1b1612;
+  --panel:rgba(30,24,19,.9);
+  --panel-2:#d8c5a7;
+  --text:#f5ecdf;
+  --muted:#c0ad97;
+  --line:rgba(234,216,190,.14);
+  --accent:#d6a15f;
+  --accent-strong:#b87b3d;
+  --accent-soft:rgba(214,161,95,.13);
+  --brand:#9a7048;
+  --brand-strong:#765135;
+  --brand-soft:rgba(185,137,82,.14);
+  --shadow:0 22px 55px rgba(0,0,0,.28);
+  background:
+    radial-gradient(circle at 12% 4%, rgba(154,112,72,.18), transparent 26%),
+    radial-gradient(circle at 88% 24%, rgba(214,161,95,.08), transparent 28%),
+    #0c0a08;
+  color:var(--text);
+}
+.site-shell .site-sidebar {
+  background:rgba(8,7,6,.97);
+  border-right-color:rgba(234,216,190,.12);
+}
+.site-shell .mobile-topbar {
+  background:rgba(8,7,6,.96);
+  border-bottom-color:rgba(234,216,190,.12);
+}
+.site-shell .nav-link { color:#cdbba5; }
+.site-shell .nav-link:hover { color:#fff8ef; background:rgba(216,197,167,.09); border-color:rgba(216,197,167,.12); }
+.site-shell .sidebar-collapse-button { background:rgba(216,197,167,.08); border-color:rgba(216,197,167,.16); color:#f5ecdf; }
+.site-shell .sidebar-footer a { color:#e0b47f; }
+.site-shell .brand-logo { border-color:rgba(255,255,255,.11); }
+.site-shell .page { color:var(--text); }
+.site-shell h1, .site-shell h2, .site-shell h3 { color:inherit; }
+.site-shell .eyebrow { color:#d6a15f; }
+.site-shell .category-title { color:#ddb47f; }
+.site-shell .muted { color:var(--muted); }
+.site-shell .button { background:rgba(216,197,167,.09); color:#f5ecdf; border-color:rgba(216,197,167,.16); }
+.site-shell .button:hover { border-color:#d6a15f; box-shadow:0 10px 24px rgba(0,0,0,.16); }
+.site-shell .button.primary { background:#d1b28a; color:#1d1510; border-color:#d1b28a; }
+.site-shell .card,
+.site-shell .showcase-item,
+.site-shell .place-photo-card,
+.site-shell .share-review-card,
+.site-shell .allergen-cta,
+.site-shell .product-card {
+  --text:#251b14;
+  --muted:#66513f;
+  --line:rgba(45,31,22,.13);
+  --accent:#7d4d2d;
+  --accent-strong:#60391f;
+  --brand:#715039;
+  --brand-strong:#543923;
+  color:var(--text);
+  background:linear-gradient(155deg,#e3d3b8,#cfb28e);
+  border-color:rgba(54,37,25,.15);
+  box-shadow:0 18px 42px rgba(0,0,0,.18);
+}
+.site-shell .card .muted,
+.site-shell .showcase-item span,
+.site-shell .place-photo-card figcaption span,
+.site-shell .share-review-card p { color:var(--muted); }
+.site-shell .card:hover,
+.site-shell .showcase-link:hover { border-color:rgba(125,77,45,.38); background:linear-gradient(155deg,#eadcc4,#d7ba95); }
+.site-shell .price-pill { background:rgba(70,46,31,.08); border-color:rgba(70,46,31,.14); color:#5d3b25; }
+.site-shell .tag { background:rgba(65,47,33,.1); color:#513824; }
+.site-shell .tag.allergen { background:rgba(120,53,42,.12); color:#79352d; }
+.site-shell .modal {
+  --text:#251b14;
+  --muted:#66513f;
+  --line:rgba(45,31,22,.13);
+  --brand:#715039;
+  --brand-strong:#543923;
+  color:var(--text);
+  background:#e1d0b5;
+  border-color:rgba(54,37,25,.2);
+}
+.site-shell .modal .muted { color:var(--muted); }
+.site-shell .icon-button { color:inherit; border-color:rgba(54,37,25,.18); }
+.site-shell .dish-detail-image-wrap { background:#c6aa86; border-color:rgba(54,37,25,.12); }
+.site-shell .footer { border-top-color:rgba(234,216,190,.11); }
+.site-shell .footer a:hover { color:#e0b47f; }
+.site-shell .share-section {
+  background:linear-gradient(145deg,rgba(119,82,54,.5),rgba(39,30,23,.9));
+  border-color:rgba(216,197,167,.15);
+}
+.site-shell .share-section > div:first-child { color:#f5ecdf; }
+.site-shell .share-section > div:first-child .muted { color:#c6b29a; }
+.site-shell .share-buttons button { background:#d8c5a7; color:#211710; border-color:transparent; }
+.site-shell .share-feedback { color:#e0b47f; }
+.site-shell .home-sign { border-color:rgba(234,216,190,.12); box-shadow:0 24px 55px rgba(0,0,0,.34); }
+.site-shell .place-gallery-head p,
+.site-shell .feature-heading p,
+.site-shell .home-intro-copy p { color:#c0ad97; }
+
+/* Los cuatro accesos principales se mantienen como una cruz 2x2 */
+.feature-cross { grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.feature-cross .showcase-item { min-height:154px; padding:22px; align-content:end; }
+.feature-cross .showcase-item strong { font-size:1.35rem; }
+.feature-cross .showcase-item:nth-child(2) { background:linear-gradient(155deg,#c9ab83,#b98d5f); }
+.feature-cross .showcase-item:nth-child(3) { background:linear-gradient(155deg,#dac5a6,#c9a47b); }
+.feature-cross .showcase-item:nth-child(4) { background:linear-gradient(155deg,#c4aa89,#aa805a); }
+.land-home-cta {
+  margin-top:16px;
+  min-height:132px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:24px 26px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#5c402c,#2d2118);
+  border:1px solid rgba(218,190,151,.2);
+  box-shadow:0 18px 44px rgba(0,0,0,.22);
+  color:#f7ecdd;
+  transition:transform .18s ease,border-color .18s ease;
+}
+.land-home-cta:hover { transform:translateY(-2px); border-color:rgba(218,190,151,.42); }
+.land-home-cta strong { display:block; margin-top:4px; font-size:1.55rem; }
+.land-home-cta p { margin:7px 0 0; color:#d4c1a9; }
+.land-home-arrow { font-size:2rem; color:#e3b77d; }
+.page-lead { max-width:760px; }
+
+/* Formularios de precios específicos por categoría */
+.pricing-editor { padding:14px; border:1px solid rgba(35,49,58,.09); border-radius:16px; background:rgba(255,255,255,.38); }
+.pricing-editor-head { margin-bottom:10px; }
+.pricing-fields-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.admin-earth-card { background:linear-gradient(155deg,#fbf5eb,#eee0ca); }
+
+/* Administración conserva un entorno claro y funcional */
+.admin-shell {
+  --bg:#f4eee5;
+  --bg-soft:#ece2d4;
+  --panel:#fffaf2;
+  --panel-2:#fffdf8;
+  --text:#2a211b;
+  --muted:#6e5d50;
+  --line:rgba(56,42,31,.13);
+  --accent:#8a5836;
+  --accent-strong:#6b4027;
+  --accent-soft:rgba(138,88,54,.09);
+  --brand:#6d5038;
+  --brand-strong:#503724;
+  --brand-soft:rgba(109,80,56,.11);
+  color:var(--text);
+  background:#f4eee5;
+}
+.admin-shell .admin-topbar { background:rgba(244,238,229,.95); border-bottom-color:rgba(56,42,31,.11); }
+.admin-shell .card { background:linear-gradient(155deg,#fffdf9,#f3e8d8); border-color:rgba(56,42,31,.1); }
+.admin-shell details.admin-item { background:#fffaf4; border-color:rgba(56,42,31,.11); }
+.admin-shell input,.admin-shell select,.admin-shell textarea { background:#fffdf9; color:var(--text); border-color:rgba(56,42,31,.14); }
+
+@media (max-width:760px) {
+  .feature-cross { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .feature-cross .showcase-item { min-height:136px; padding:16px; }
+  .feature-cross .showcase-item strong { font-size:1.12rem; }
+  .feature-cross .showcase-item span:not(.showcase-arrow) { font-size:.84rem; }
+  .land-home-cta { min-height:118px; padding:20px; }
+  .pricing-fields-grid { grid-template-columns:1fr; }
+}

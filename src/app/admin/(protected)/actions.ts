@@ -118,6 +118,11 @@ async function nextSpecialSortOrder(type: SpecialType) {
   return (result._max.sortOrder ?? -1) + 1;
 }
 
+async function nextLandProductSortOrder() {
+  const result = await (prisma as any).landProduct.aggregate({ _max: { sortOrder: true } });
+  return (result._max.sortOrder ?? -1) + 1;
+}
+
 export async function logoutAdmin() {
   await clearAdminSession();
   redirect("/admin/login");
@@ -137,6 +142,12 @@ export async function createMenuItem(formData: FormData) {
       priceTapaCents: parseEuroToCents(formData.get("priceTapa")),
       priceMediaCents: parseEuroToCents(formData.get("priceMedia")),
       pricePlatoCents: parseEuroToCents(formData.get("pricePlato")),
+      priceUnidadCents: parseEuroToCents(formData.get("priceUnidad")),
+      priceCopaCents: parseEuroToCents(formData.get("priceCopa")),
+      priceBotellaCents: parseEuroToCents(formData.get("priceBotella")),
+      price100gCents: parseEuroToCents(formData.get("price100g")),
+      priceCuartoKgCents: parseEuroToCents(formData.get("priceCuartoKg")),
+      priceKiloCents: parseEuroToCents(formData.get("priceKilo")),
       imageData: image.imageData,
       imageMime: image.imageMime,
       active: formData.get("active") === "on",
@@ -167,6 +178,12 @@ export async function updateMenuItem(id: string, formData: FormData) {
       priceTapaCents: parseEuroToCents(formData.get("priceTapa")),
       priceMediaCents: parseEuroToCents(formData.get("priceMedia")),
       pricePlatoCents: parseEuroToCents(formData.get("pricePlato")),
+      priceUnidadCents: parseEuroToCents(formData.get("priceUnidad")),
+      priceCopaCents: parseEuroToCents(formData.get("priceCopa")),
+      priceBotellaCents: parseEuroToCents(formData.get("priceBotella")),
+      price100gCents: parseEuroToCents(formData.get("price100g")),
+      priceCuartoKgCents: parseEuroToCents(formData.get("priceCuartoKg")),
+      priceKiloCents: parseEuroToCents(formData.get("priceKilo")),
       imageData: image.imageData,
       imageMime: image.imageMime,
       active: formData.get("active") === "on",
@@ -197,6 +214,70 @@ export async function reorderMenuItems(ids: string[]) {
   );
   revalidatePath("/carta");
   revalidatePath("/admin/carta");
+}
+
+export async function createLandProduct(formData: FormData) {
+  await requireAdmin();
+  const image = await readMenuImage(formData);
+  if (image.error) redirect(`/admin/productos-tierra?status=image_${image.error}`);
+  await (prisma as any).landProduct.create({
+    data: {
+      name: requiredName(formData),
+      description: str(formData, "description", 1200) || null,
+      priceCents: parseEuroToCents(formData.get("price")),
+      imageData: image.imageData,
+      imageMime: image.imageMime,
+      active: formData.get("active") === "on",
+      sortOrder: await nextLandProductSortOrder(),
+    },
+  });
+  revalidatePath("/");
+  revalidatePath("/productos-de-la-tierra");
+  revalidatePath("/admin");
+  revalidatePath("/admin/productos-tierra");
+  redirect("/admin/productos-tierra?status=created");
+}
+
+export async function updateLandProduct(id: string, formData: FormData) {
+  await requireAdmin();
+  const current = await (prisma as any).landProduct.findUnique({ where: { id } });
+  if (!current) return;
+  const image = await readMenuImage(formData, current);
+  if (image.error) redirect(`/admin/productos-tierra?status=image_${image.error}`);
+  await (prisma as any).landProduct.update({
+    where: { id },
+    data: {
+      name: requiredName(formData),
+      description: str(formData, "description", 1200) || null,
+      priceCents: parseEuroToCents(formData.get("price")),
+      imageData: image.imageData,
+      imageMime: image.imageMime,
+      active: formData.get("active") === "on",
+    },
+  });
+  revalidatePath("/");
+  revalidatePath("/productos-de-la-tierra");
+  revalidatePath("/admin");
+  revalidatePath("/admin/productos-tierra");
+  redirect("/admin/productos-tierra?status=saved");
+}
+
+export async function deleteLandProduct(id: string) {
+  await requireAdmin();
+  await (prisma as any).landProduct.delete({ where: { id } });
+  revalidatePath("/");
+  revalidatePath("/productos-de-la-tierra");
+  revalidatePath("/admin");
+  revalidatePath("/admin/productos-tierra");
+  redirect("/admin/productos-tierra?status=deleted");
+}
+
+export async function reorderLandProducts(ids: string[]) {
+  await requireAdmin();
+  if (!Array.isArray(ids) || !ids.length) return;
+  await prisma.$transaction(ids.map((id, index) => (prisma as any).landProduct.update({ where: { id }, data: { sortOrder: index } })));
+  revalidatePath("/productos-de-la-tierra");
+  revalidatePath("/admin/productos-tierra");
 }
 
 export async function createSpecialItem(formData: FormData) {

@@ -141,7 +141,7 @@ function makePdf(objects: string[]) {
 }
 
 export function createAllergenPdf(items: AllergenPdfItem[]) {
-  const categoryOrder = ["ENTRANTES", "PESCADO", "CARNES", "BOCADILLOS", "POSTRES", "OTROS"];
+  const categoryOrder = ["ENTRANTES", "CHACINA", "PESCADO", "CARNES", "BOCADILLOS", "POSTRES", "BEBIDAS", "VINOS", "OTROS"];
   const rows: Array<{ kind: "category"; label: string } | { kind: "dish"; item: AllergenPdfItem }> = [];
 
   for (const category of categoryOrder) {

@@ -5,26 +5,50 @@ import { createMenuItem, deleteMenuItem, updateMenuItem } from "../actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { AllergenSelector } from "@/components/AllergenSelector";
 import { SortableOrderList } from "@/components/SortableOrderList";
+import { MenuCategoryPriceFields } from "@/components/MenuCategoryPriceFields";
 import { dishImageSrc } from "@/lib/dishImages";
 
 export const dynamic = "force-dynamic";
 
-function euros(cents: number | null) {
+function euros(cents: number | null | undefined) {
   return cents == null ? "" : String(cents / 100).replace(".", ",");
 }
 
-type MenuItemRecord = NonNullable<Awaited<ReturnType<typeof prisma.menuItem.findFirst>>> & { imageMime?: string | null; hasImage?: boolean; imageVersion?: string | number | null };
+type MenuItemRecord = NonNullable<Awaited<ReturnType<typeof prisma.menuItem.findFirst>>> & {
+  imageMime?: string | null;
+  hasImage?: boolean;
+  imageVersion?: string | number | null;
+  priceUnidadCents?: number | null;
+  priceCopaCents?: number | null;
+  priceBotellaCents?: number | null;
+  price100gCents?: number | null;
+  priceCuartoKgCents?: number | null;
+  priceKiloCents?: number | null;
+};
 
 function Fields({ item }: { item?: MenuItemRecord }) {
   return (
     <div className="form-grid">
       <div className="field"><label>Nombre</label><input name="name" required defaultValue={item?.name ?? ""} /></div>
-      <div className="field"><label>Categoría</label><select name="category" defaultValue={item?.category ?? MenuCategory.ENTRANTES}>{Object.values(MenuCategory).map((c) => <option value={c} key={c}>{categoryLabel(c)}</option>)}</select></div>
+      <MenuCategoryPriceFields
+        category={item?.category ?? MenuCategory.ENTRANTES}
+        prices={{
+          priceTapa: euros(item?.priceTapaCents),
+          priceMedia: euros(item?.priceMediaCents),
+          pricePlato: euros(item?.pricePlatoCents),
+          priceUnidad: euros(item?.priceUnidadCents),
+          priceCopa: euros(item?.priceCopaCents),
+          priceBotella: euros(item?.priceBotellaCents),
+          price100g: euros(item?.price100gCents),
+          priceCuartoKg: euros(item?.priceCuartoKgCents),
+          priceKilo: euros(item?.priceKiloCents),
+        }}
+      />
       <div className="field full"><label>Descripción</label><textarea name="description" defaultValue={item?.description ?? ""} /></div>
       <div className="field full"><label>Ingredientes (separados por comas)</label><input name="ingredients" defaultValue={item?.ingredients.join(", ") ?? ""} placeholder="tomate, cebolla, aceite de oliva" /></div>
       <div className="field full">
-        <label>Imagen del plato</label>
-        <p className="field-help">JPG, PNG o WebP. Máximo 1,5 MB. Si no subes ninguna imagen, la web utiliza automáticamente la imagen genérica de su categoría.</p>
+        <label>Imagen</label>
+        <p className="field-help">JPG, PNG o WebP. Máximo 1,5 MB. Si no subes ninguna imagen, la web utiliza automáticamente una imagen genérica de su categoría.</p>
         <div className="admin-dish-image-row">
           {item ? <img className="admin-dish-image-preview" src={dishImageSrc(item)} alt={`Vista previa de ${item.name}`} /> : null}
           <div className="admin-dish-image-controls">
@@ -34,9 +58,6 @@ function Fields({ item }: { item?: MenuItemRecord }) {
         </div>
       </div>
       <div className="field full"><label>Alérgenos</label><p className="field-help">Selecciona todos los que correspondan. El listado es cerrado para evitar variantes o errores al escribir.</p><AllergenSelector selected={item?.allergens ?? []} /></div>
-      <div className="field"><label>Precio tapa (€)</label><input name="priceTapa" inputMode="decimal" defaultValue={item ? euros(item.priceTapaCents) : ""} /></div>
-      <div className="field"><label>Precio media (€)</label><input name="priceMedia" inputMode="decimal" defaultValue={item ? euros(item.priceMediaCents) : ""} /></div>
-      <div className="field"><label>Precio plato (€)</label><input name="pricePlato" inputMode="decimal" defaultValue={item ? euros(item.pricePlatoCents) : ""} /></div>
       <label style={{ display: "flex", alignItems: "center", gap: 8 }}><input style={{ width: "auto" }} type="checkbox" name="active" defaultChecked={item?.active ?? true} /> Visible en la web</label>
     </div>
   );
@@ -48,8 +69,10 @@ export default async function AdminCartaPage({ searchParams }: { searchParams: P
       orderBy: [{ category: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
       select: ({
         id: true, name: true, description: true, category: true, ingredients: true, allergens: true,
-        priceTapaCents: true, priceMediaCents: true, pricePlatoCents: true, active: true, sortOrder: true,
-        imageMime: true, updatedAt: true,
+        priceTapaCents: true, priceMediaCents: true, pricePlatoCents: true,
+        priceUnidadCents: true, priceCopaCents: true, priceBotellaCents: true,
+        price100gCents: true, priceCuartoKgCents: true, priceKiloCents: true,
+        active: true, sortOrder: true, imageMime: true, updatedAt: true,
       } as any),
     }) as any,
     searchParams,
@@ -60,31 +83,31 @@ export default async function AdminCartaPage({ searchParams }: { searchParams: P
     imageVersion: item.updatedAt instanceof Date ? item.updatedAt.getTime() : String(item.updatedAt ?? ""),
   })) as MenuItemRecord[];
   const feedback: Record<string, string> = {
-    created: "Plato creado correctamente.",
+    created: "Elemento creado correctamente.",
     saved: "Cambios guardados correctamente.",
-    deleted: "Plato eliminado correctamente.",
+    deleted: "Elemento eliminado correctamente.",
     image_size: "La imagen supera 1,5 MB. Reduce su tamaño e inténtalo de nuevo.",
     image_format: "Formato de imagen no admitido. Utiliza JPG, PNG o WebP.",
   };
   return (
     <div className="admin-page">
-      <div className="section-head"><div><div className="eyebrow">Carta</div><h2>Platos y precios</h2><p>Añade tapa, media y plato de forma independiente. Ingredientes y alérgenos también son editables.</p></div></div>
+      <div className="section-head">
+        <div><div className="eyebrow">Carta</div><h2>Platos, bebidas, vinos y chacina</h2><p>Gestiona categorías, formatos de precio, imágenes, ingredientes y alérgenos desde un único lugar.</p></div>
+        <a className="button primary" href="/api/admin/carta/pdf">Descargar carta actualizada (PDF)</a>
+      </div>
       {params.status && feedback[params.status] ? <div className={`status-box ${params.status.startsWith("image_") ? "error" : "success"} admin-flash`} role="status">{params.status.startsWith("image_") ? "⚠" : "✓"} {feedback[params.status]}</div> : null}
 
-      <section className="card order-card">
+      <section className="card order-card admin-earth-card">
         <div className="eyebrow">Orden de aparición</div>
-        <h3 style={{ marginTop: 6 }}>Arrastra los platos dentro de cada categoría</h3>
-        <p className="muted">Cada categoría mantiene su propio orden, exactamente como se muestra después en la carta.</p>
+        <h3 style={{ marginTop: 6 }}>Arrastra los elementos dentro de cada categoría</h3>
+        <p className="muted">Cada categoría mantiene su propio orden, exactamente como se muestra después en la carta y en el PDF.</p>
         {Object.values(MenuCategory).map((category) => {
           const categoryItems = items.filter((item) => item.category === category);
           if (!categoryItems.length) return null;
           return (
             <div className="order-group" key={category}>
               <h4>{categoryLabel(category)}</h4>
-              <SortableOrderList
-                kind="menu"
-                items={categoryItems.map((item) => ({ id: item.id, label: item.name }))}
-              />
+              <SortableOrderList kind="menu" items={categoryItems.map((item) => ({ id: item.id, label: item.name }))} />
             </div>
           );
         })}
@@ -93,8 +116,8 @@ export default async function AdminCartaPage({ searchParams }: { searchParams: P
       <div className="hr" />
 
       <details className="admin-item" open>
-        <summary><span>＋ Añadir plato</span></summary>
-        <form className="admin-form" action={createMenuItem} encType="multipart/form-data"><Fields /><button className="button primary" type="submit" style={{ marginTop: 16 }}>Crear plato</button></form>
+        <summary><span>＋ Añadir elemento a la carta</span></summary>
+        <form className="admin-form" action={createMenuItem} encType="multipart/form-data"><Fields /><button className="button primary" type="submit" style={{ marginTop: 16 }}>Crear</button></form>
       </details>
 
       <div className="hr" />

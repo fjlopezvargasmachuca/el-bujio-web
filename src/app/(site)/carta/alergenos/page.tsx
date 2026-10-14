@@ -7,7 +7,7 @@ import { categoryLabel } from "@/lib/format";
 export const metadata: Metadata = { title: "Carta de alérgenos" };
 export const dynamic = "force-dynamic";
 
-const categoryOrder = ["ENTRANTES", "PESCADO", "CARNES", "BOCADILLOS", "POSTRES", "OTROS"];
+const categoryOrder = ["ENTRANTES", "CHACINA", "PESCADO", "CARNES", "BOCADILLOS", "POSTRES", "BEBIDAS", "VINOS", "OTROS"];
 
 export default async function AllergenChartPage() {
   const items = await prisma.menuItem.findMany({

@@ -43,6 +43,79 @@ const items = [
   ["Arroz con leche", MenuCategory.POSTRES, 450, ["leche", "arroz", "azúcar", "canela"], ["Leche"]],
 ] as const;
 
+
+const catalogExpansionItems = [
+  {
+    name: "Agua mineral",
+    category: "BEBIDAS" as MenuCategory,
+    description: "Botella individual.",
+    ingredients: ["agua mineral"],
+    allergens: [],
+    priceUnidadCents: 150,
+  },
+  {
+    name: "Refresco",
+    category: "BEBIDAS" as MenuCategory,
+    description: "Refresco individual. Consulta variedades disponibles.",
+    ingredients: [],
+    allergens: [],
+    priceUnidadCents: 220,
+  },
+  {
+    name: "Cerveza",
+    category: "BEBIDAS" as MenuCategory,
+    description: "Botella o lata individual según disponibilidad.",
+    ingredients: ["agua", "malta de cebada", "lúpulo"],
+    allergens: ["Gluten"],
+    priceUnidadCents: 220,
+  },
+  {
+    name: "Vino blanco de la casa",
+    category: "VINOS" as MenuCategory,
+    description: "Vino blanco de la casa.",
+    ingredients: ["vino"],
+    allergens: ["Sulfitos"],
+    priceCopaCents: 250,
+    priceBotellaCents: 1200,
+  },
+  {
+    name: "Vino tinto de la Sierra",
+    category: "VINOS" as MenuCategory,
+    description: "Selección de vino tinto de la zona.",
+    ingredients: ["vino"],
+    allergens: ["Sulfitos"],
+    priceCopaCents: 300,
+    priceBotellaCents: 1600,
+  },
+  {
+    name: "Jamón ibérico",
+    category: "CHACINA" as MenuCategory,
+    description: "Corte de chacina ibérica.",
+    ingredients: ["jamón de cerdo ibérico", "sal"],
+    allergens: [],
+    price100gCents: 1400,
+    priceCuartoKgCents: 3200,
+    priceKiloCents: 12000,
+  },
+  {
+    name: "Chorizo ibérico",
+    category: "CHACINA" as MenuCategory,
+    description: "Chorizo ibérico curado.",
+    ingredients: ["carne de cerdo", "pimentón", "sal", "especias"],
+    allergens: [],
+    priceUnidadCents: 500,
+    price100gCents: 600,
+    priceCuartoKgCents: 1400,
+    priceKiloCents: 5200,
+  },
+] as const;
+
+const landProductExamples = [
+  ["Miel de la Sierra", "Miel de la Sierra de Grazalema. Ejemplo editable desde administración.", 850],
+  ["Sal de Cádiz", "Sal envasada para llevar. Ejemplo editable desde administración.", 350],
+  ["Aceite de oliva virgen extra", "Producto de la tierra en formato para venta. Ejemplo editable desde administración.", 1200],
+] as const;
+
 const menuDiaItems = [
   ["Potaje casero", "Primeros", ["garbanzos", "verduras", "patata", "apio", "ajo", "especias"], ["Apio"]],
   ["Sopa de tomate", "Primeros", ["tomate", "cebolla", "pan", "ajo", "aceite de oliva"], ["Gluten"]],
@@ -53,7 +126,8 @@ const menuDiaItems = [
 
 async function main() {
   const email = (process.env.ADMIN_EMAIL ?? "admin@elbujio.es").trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD ?? "Bujio2026!";
+  const password = process.env.ADMIN_PASSWORD?.trim();
+  if (!password) throw new Error("ADMIN_PASSWORD es obligatorio.");
   if (password.length < 10) throw new Error("ADMIN_PASSWORD debe tener al menos 10 caracteres.");
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -147,6 +221,43 @@ async function main() {
         active: false,
       },
     });
+  }
+
+  // Ampliación v1.11: se ejecuta una sola vez por base de datos para no
+  // recrear productos que el administrador elimine posteriormente.
+  const expansionSettings = await prisma.siteSettings.findUnique({ where: { id: 1 } }) as any;
+  if (!expansionSettings?.catalogExpansionV11Seeded) {
+    let nextOrder = ((await prisma.menuItem.aggregate({ _max: { sortOrder: true } }))._max.sortOrder ?? -1) + 1;
+    for (const item of catalogExpansionItems) {
+      const exists = await prisma.menuItem.findFirst({ where: { name: item.name, category: item.category } });
+      if (exists) continue;
+      await prisma.menuItem.create({
+        data: ({
+          name: item.name,
+          category: item.category,
+          description: item.description,
+          ingredients: [...item.ingredients],
+          allergens: [...item.allergens],
+          priceUnidadCents: "priceUnidadCents" in item ? item.priceUnidadCents : null,
+          priceCopaCents: "priceCopaCents" in item ? item.priceCopaCents : null,
+          priceBotellaCents: "priceBotellaCents" in item ? item.priceBotellaCents : null,
+          price100gCents: "price100gCents" in item ? item.price100gCents : null,
+          priceCuartoKgCents: "priceCuartoKgCents" in item ? item.priceCuartoKgCents : null,
+          priceKiloCents: "priceKiloCents" in item ? item.priceKiloCents : null,
+          sortOrder: nextOrder++,
+          active: true,
+        } as any),
+      });
+    }
+
+    if ((await (prisma as any).landProduct.count()) === 0) {
+      let productOrder = 0;
+      for (const [name, description, priceCents] of landProductExamples) {
+        await (prisma as any).landProduct.create({ data: { name, description, priceCents, sortOrder: productOrder++, active: true } });
+      }
+    }
+
+    await prisma.siteSettings.update({ where: { id: 1 }, data: ({ catalogExpansionV11Seeded: true } as any) });
   }
 
   console.log("Base de datos preparada.");

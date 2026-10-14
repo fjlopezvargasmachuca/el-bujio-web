@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Imagen genérica de Vinos">
+<rect width="480" height="300" rx="28" fill="#CCB08B"/><circle cx="405" cy="55" r="70" fill="#15120F" opacity=".08"/><circle cx="72" cy="252" r="90" fill="#6D2F2E" opacity=".08"/>
+<g fill="none" stroke="#3A211B" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><path d="M145 62h82c0 56-8 91-41 104v49M154 215h64M280 52h55v164h-55zM287 91h41"/></g>
+<text x="240" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#3A211B">Vinos</text><text x="240" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#76543C">Venta El Bujio</text></svg>

@@ -6,7 +6,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 export const dynamic = "force-dynamic";
 
 const featureLinks = [
-  { href: "/carta", title: "Carta", text: "Entrantes, pescados, carnes, bocadillos y postres." },
+  { href: "/carta", title: "Carta", text: "Cocina, bebidas, vinos, chacina y postres." },
   { href: "/menu-del-dia", title: "Menú del día", text: "Un primero, un segundo y un postre entre las opciones disponibles." },
   { href: "/ofertas", title: "Ofertas", text: "Consulta las promociones disponibles actualmente en la venta." },
   { href: "/contacto", title: "Contacto", text: "Teléfono, horario y ubicación para llegar a la venta." },
@@ -113,15 +113,23 @@ export default async function HomePage() {
           <h2 id="sabores-title">Sabores de siempre</h2>
           <p>Consulta nuestra carta, el menú del día, las ofertas o cómo llegar.</p>
         </Link>
-        <div className="showcase-grid">
+        <div className="showcase-grid feature-cross">
           {featureLinks.map((item) => (
-            <Link className="showcase-item showcase-link" href={item.href} key={item.href}>
+            <Link className="showcase-item showcase-link earth-patch" href={item.href} key={item.href}>
               <strong>{item.title}</strong>
               <span>{item.text}</span>
               <span className="showcase-arrow" aria-hidden="true">→</span>
             </Link>
           ))}
         </div>
+        <Link className="land-home-cta" href="/productos-de-la-tierra">
+          <div>
+            <span className="eyebrow">Para llevar</span>
+            <strong>Productos de la tierra</strong>
+            <p>Miel, sal, aceite y otros productos seleccionados de la zona, disponibles por unidad.</p>
+          </div>
+          <span className="land-home-arrow" aria-hidden="true">→</span>
+        </Link>
       </section>
 
       <section className="section share-section">

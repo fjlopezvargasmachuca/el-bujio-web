@@ -4,6 +4,9 @@ const CATEGORY_FALLBACKS: Record<string, string> = {
   CARNES: "/dishes/carnes.svg",
   BOCADILLOS: "/dishes/bocadillos.svg",
   POSTRES: "/dishes/postres.svg",
+  BEBIDAS: "/dishes/bebidas.svg",
+  VINOS: "/dishes/vinos.svg",
+  CHACINA: "/dishes/chacina.svg",
   OTROS: "/dishes/otros.svg",
 };
 
