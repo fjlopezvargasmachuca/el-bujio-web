@@ -1264,3 +1264,22 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
   .offer-dish-item img { width:100%; aspect-ratio:16/9; }
   .menu-service-notes { width:100%; }
 }
+
+/* v1.17 · imagen propia en ofertas */
+.offer-card-image-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  background: rgba(0,0,0,.04);
+}
+.offer-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.offer-detail-image-wrap {
+  margin-bottom: 18px;
+}

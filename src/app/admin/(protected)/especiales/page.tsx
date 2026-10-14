@@ -4,6 +4,7 @@ import { categoryLabel } from "@/lib/format";
 import { createSpecialItem, deleteSpecialItem, updateMenuDayPrice, updateSpecialItem } from "../actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { SortableOrderList } from "@/components/SortableOrderList";
+import { specialImageSrc } from "@/lib/specialImages";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,10 @@ type SpecialRecord = {
   description: string | null;
   section: string | null;
   priceCents: number | null;
+  imageMime?: string | null;
+  updatedAt?: Date;
+  hasImage?: boolean;
+  imageVersion?: string | number | null;
   active: boolean;
   sortOrder: number;
   selections: Array<{ menuItemId: string; sortOrder: number; menuItem: DishOption }>;
@@ -102,6 +107,21 @@ function OfferFields({ dishes, item }: { dishes: DishOption[]; item?: SpecialRec
       <div className="field"><label>Precio de la oferta (€)</label><input name="price" required inputMode="decimal" defaultValue={euros(item?.priceCents)} placeholder="18,00" /></div>
       <div className="field full"><label>Descripción</label><textarea name="description" defaultValue={item?.description ?? ""} placeholder="Descripción opcional de la promoción." /></div>
       <div className="field full">
+        <label>Imagen de la oferta</label>
+        <p className="field-help">Puedes subir una imagen propia de la promoción. JPG, PNG o WebP. Máximo 1,5 MB. Si no subes ninguna se utilizará una imagen genérica.</p>
+        <div className="admin-dish-image-row">
+          <img
+            className="admin-dish-image-preview"
+            src={item ? specialImageSrc(item) : "/dishes/otros.svg"}
+            alt={item ? `Vista previa de ${item.name}` : "Vista previa genérica de la oferta"}
+          />
+          <div className="admin-dish-image-controls">
+            <input name="image" type="file" accept="image/jpeg,image/png,image/webp" />
+            {item?.hasImage ? <label className="inline-check"><input type="checkbox" name="removeImage" /> Eliminar imagen subida y usar la genérica</label> : null}
+          </div>
+        </div>
+      </div>
+      <div className="field full">
         <label>Platos incluidos</label>
         <p className="field-help">Selecciona uno o varios platos de la Carta. El precio de esta oferta es independiente y nunca modifica el precio original de los platos.</p>
         <DishCheckboxes dishes={dishes} selectedIds={selectedIds} />
@@ -133,7 +153,11 @@ export default async function AdminSpecialsPage({ searchParams }: { searchParams
     searchParams,
   ]);
 
-  const items = rawItems as SpecialRecord[];
+  const items = (rawItems as SpecialRecord[]).map((item) => ({
+    ...item,
+    hasImage: Boolean(item.imageMime),
+    imageVersion: item.updatedAt instanceof Date ? item.updatedAt.getTime() : String(item.updatedAt ?? ""),
+  }));
   const dishOptions = dishes as DishOption[];
 
   const feedback: Record<string, string> = {
@@ -144,6 +168,8 @@ export default async function AdminSpecialsPage({ searchParams }: { searchParams
     selection_required: "Selecciona al menos un plato de la Carta.",
     section_required: "Selecciona si el plato pertenece a Primeros, Segundos o Postres.",
     offer_price_required: "Indica el precio de la oferta.",
+    image_size: "La imagen de la oferta supera 1,5 MB. Reduce su tamaño e inténtalo de nuevo.",
+    image_format: "Formato de imagen no admitido. Utiliza JPG, PNG o WebP.",
   };
 
   const menuItems = items.filter((item) => item.type === SpecialType.MENU_DIA);
@@ -161,8 +187,8 @@ export default async function AdminSpecialsPage({ searchParams }: { searchParams
       </div>
 
       {params.status && feedback[params.status] ? (
-        <div className={`status-box ${["selection_required", "section_required", "offer_price_required"].includes(params.status) ? "error" : "success"} admin-flash`} role="status">
-          {["selection_required", "section_required", "offer_price_required"].includes(params.status) ? "⚠" : "✓"} {feedback[params.status]}
+        <div className={`status-box ${["selection_required", "section_required", "offer_price_required", "image_size", "image_format"].includes(params.status) ? "error" : "success"} admin-flash`} role="status">
+          {["selection_required", "section_required", "offer_price_required", "image_size", "image_format"].includes(params.status) ? "⚠" : "✓"} {feedback[params.status]}
         </div>
       ) : null}
 
@@ -220,13 +246,13 @@ export default async function AdminSpecialsPage({ searchParams }: { searchParams
 
       <details className="admin-item" open>
         <summary>＋ Crear oferta</summary>
-        <form className="admin-form" action={createSpecialItem}><OfferFields dishes={dishOptions} /><button className="button primary" style={{ marginTop: 16 }}>Crear oferta</button></form>
+        <form className="admin-form" action={createSpecialItem} encType="multipart/form-data"><OfferFields dishes={dishOptions} /><button className="button primary" style={{ marginTop: 16 }}>Crear oferta</button></form>
       </details>
 
       {offerItems.map((item) => (
         <details className="admin-item" key={`${item.id}-${params.status ?? "idle"}`}>
           <summary><span>{item.name}</span><span className="muted">{item.selections.length} plato{item.selections.length === 1 ? "" : "s"} · {item.active ? "publicada" : "oculta"}</span></summary>
-          <form className="admin-form" action={updateSpecialItem.bind(null, item.id)}><OfferFields dishes={dishOptions} item={item} /><button className="button primary" style={{ marginTop: 16 }}>Guardar cambios</button></form>
+          <form className="admin-form" action={updateSpecialItem.bind(null, item.id)} encType="multipart/form-data"><OfferFields dishes={dishOptions} item={item} /><button className="button primary" style={{ marginTop: 16 }}>Guardar cambios</button></form>
           <form action={deleteSpecialItem.bind(null, item.id)} style={{ marginTop: 10 }}><ConfirmButton message={`¿Eliminar definitivamente la oferta ${item.name}?`}>Eliminar oferta</ConfirmButton></form>
         </details>
       ))}

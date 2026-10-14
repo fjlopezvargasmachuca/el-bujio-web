@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { formatPrice } from "@/lib/format";
 import { dishImageSrc } from "@/lib/dishImages";
+import { specialImageSrc } from "@/lib/specialImages";
 
 export type OfferDish = {
   id: string;
@@ -22,9 +23,12 @@ export function OfferCard({ offer }: {
     description?: string | null;
     priceCents: number | null;
     dishes: OfferDish[];
+    hasImage?: boolean;
+    imageVersion?: string | number | null;
   };
 }) {
   const [open, setOpen] = useState(false);
+  const offerImage = specialImageSrc({ id: offer.id, type: "OFERTA", hasImage: offer.hasImage, imageVersion: offer.imageVersion });
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
@@ -35,6 +39,7 @@ export function OfferCard({ offer }: {
   return (
     <>
       <button className="card dish-card offer-card" onClick={() => setOpen(true)}>
+        <div className="offer-card-image-wrap"><img className="offer-card-image" src={offerImage} alt={`Imagen de ${offer.name}`} /></div>
         <div className="dish-top">
           <h3>{offer.name}</h3>
           {offer.priceCents != null ? <strong className="accent">{formatPrice(offer.priceCents)}</strong> : null}
@@ -52,6 +57,9 @@ export function OfferCard({ offer }: {
                 <h2>{offer.name}</h2>
               </div>
               <button className="icon-button" aria-label="Cerrar" onClick={() => setOpen(false)}>×</button>
+            </div>
+            <div className="dish-detail-image-wrap offer-detail-image-wrap">
+              <img className="dish-detail-image" src={offerImage} alt={`Imagen de ${offer.name}`} />
             </div>
             {offer.description ? <p className="muted">{offer.description}</p> : null}
             {offer.priceCents != null ? <p className="offer-price"><strong>{formatPrice(offer.priceCents)}</strong></p> : null}

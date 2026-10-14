@@ -323,10 +323,12 @@ export async function createSpecialItem(formData: FormData) {
   if (type === SpecialType.OFERTA && offerPrice == null) {
     redirect("/admin/especiales?status=offer_price_required");
   }
+  const offerImage = type === SpecialType.OFERTA ? await readMenuImage(formData) : null;
+  if (offerImage?.error) redirect("/admin/especiales?status=image_" + offerImage.error);
 
   const sortOrder = await nextSpecialSortOrder(type);
   await prisma.$transaction(async (tx) => {
-    const special = await tx.specialItem.create({
+    const special = await (tx.specialItem as any).create({
       data: {
         type,
         name: offerName,
@@ -335,6 +337,8 @@ export async function createSpecialItem(formData: FormData) {
         priceCents: offerPrice,
         ingredients: [],
         allergens: [],
+        imageData: offerImage?.imageData ?? null,
+        imageMime: offerImage?.imageMime ?? null,
         active: formData.get("active") === "on",
         sortOrder,
       },
@@ -352,7 +356,7 @@ export async function createSpecialItem(formData: FormData) {
 
 export async function updateSpecialItem(id: string, formData: FormData) {
   await requireAdmin();
-  const current = await prisma.specialItem.findUnique({ where: { id } });
+  const current = await prisma.specialItem.findUnique({ where: { id } }) as any;
   if (!current) return;
 
   const type = specialType(str(formData, "type"));
@@ -375,12 +379,16 @@ export async function updateSpecialItem(id: string, formData: FormData) {
   if (type === SpecialType.OFERTA && offerPrice == null) {
     redirect("/admin/especiales?status=offer_price_required");
   }
+  const offerImage = type === SpecialType.OFERTA
+    ? await readMenuImage(formData, { imageData: current.imageData, imageMime: current.imageMime })
+    : { imageData: null, imageMime: null, error: null as string | null };
+  if (offerImage.error) redirect("/admin/especiales?status=image_" + offerImage.error);
 
   const typeChanged = current.type !== type;
   const nextOrder = typeChanged ? await nextSpecialSortOrder(type) : current.sortOrder;
 
   await prisma.$transaction(async (tx) => {
-    await tx.specialItem.update({
+    await (tx.specialItem as any).update({
       where: { id },
       data: {
         type,
@@ -390,6 +398,8 @@ export async function updateSpecialItem(id: string, formData: FormData) {
         priceCents: offerPrice,
         ingredients: [],
         allergens: [],
+        imageData: offerImage.imageData,
+        imageMime: offerImage.imageMime,
         active: formData.get("active") === "on",
         sortOrder: nextOrder,
       },

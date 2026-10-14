@@ -34,6 +34,8 @@ export default async function OffersPage() {
 
   const items = rawItems.map((item) => ({
     ...item,
+    hasImage: Boolean(item.imageMime),
+    imageVersion: item.updatedAt instanceof Date ? item.updatedAt.getTime() : String(item.updatedAt ?? ""),
     dishes: (item.selections ?? []).map((selection: any) => ({
       ...selection.menuItem,
       hasImage: Boolean(selection.menuItem.imageMime),
