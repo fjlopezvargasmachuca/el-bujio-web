@@ -1036,3 +1036,70 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
   font-size:1.08rem;
   max-width:620px;
 }
+
+/* v1.14 · ajustes de inicio, alérgenos y CTA */
+.home-features {
+  display:grid;
+  gap:18px;
+}
+.home-feature-heading {
+  text-align:center;
+  margin:0 auto 4px;
+}
+.home-feature-heading p {
+  max-width:720px;
+  margin:12px auto 0;
+}
+.feature-cross {
+  width:min(100%, 1080px);
+  margin:0 auto;
+}
+.land-home-cta {
+  width:min(100%, 1080px);
+  margin:16px auto 0;
+  justify-content:flex-start;
+}
+.review-google-button {
+  border:2px solid rgba(15, 10, 8, .65)!important;
+}
+.site-shell .share-review-card .review-google-button {
+  border-color:#20140d!important;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.22);
+}
+
+.allergen-table-wrap {
+  overflow:auto !important;
+}
+.allergen-table thead th {
+  position:sticky !important;
+  top:0 !important;
+}
+.allergen-table .dish-column,
+.allergen-table .dish-name,
+.allergen-table .allergen-category-name {
+  position:sticky !important;
+  left:0 !important;
+}
+.allergen-category-row .allergen-category-name {
+  z-index:36 !important;
+}
+.allergen-table thead .dish-column {
+  z-index:38 !important;
+}
+
+@media (max-width:760px) {
+  .home-feature-heading {
+    text-align:center;
+    padding-inline:10px;
+  }
+  .home-feature-heading p {
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .feature-cross {
+    width:min(100%, 620px);
+  }
+  .land-home-cta {
+    width:min(100%, 620px);
+  }
+}

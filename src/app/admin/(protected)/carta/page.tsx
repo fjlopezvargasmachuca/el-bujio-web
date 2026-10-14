@@ -1,7 +1,7 @@
 import { MenuCategory } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { categoryLabel } from "@/lib/format";
-import { createMenuItem, deleteMenuItem, updateMenuItem } from "../actions";
+import { createMenuItem, deleteMenuItem, updateMenuItem, updateMenuDayPrice } from "../actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { AllergenSelector } from "@/components/AllergenSelector";
 import { SortableOrderList } from "@/components/SortableOrderList";
@@ -19,6 +19,11 @@ type MenuItemRecord = NonNullable<Awaited<ReturnType<typeof prisma.menuItem.find
   hasImage?: boolean;
   imageVersion?: string | number | null;
   priceUnidadCents?: number | null;
+  priceCanaCents?: number | null;
+  priceCortadaCents?: number | null;
+  priceTercioCents?: number | null;
+  priceBotellaPequenaCents?: number | null;
+  priceBotellaGrandeCents?: number | null;
   priceCopaCents?: number | null;
   priceBotellaCents?: number | null;
   price100gCents?: number | null;
@@ -37,6 +42,11 @@ function Fields({ item }: { item?: MenuItemRecord }) {
           priceMedia: euros(item?.priceMediaCents),
           pricePlato: euros(item?.pricePlatoCents),
           priceUnidad: euros(item?.priceUnidadCents),
+          priceCana: euros(item?.priceCanaCents),
+          priceCortada: euros(item?.priceCortadaCents),
+          priceTercio: euros(item?.priceTercioCents),
+          priceBotellaPequena: euros(item?.priceBotellaPequenaCents),
+          priceBotellaGrande: euros(item?.priceBotellaGrandeCents),
           priceCopa: euros(item?.priceCopaCents),
           priceBotella: euros(item?.priceBotellaCents),
           price100g: euros(item?.price100gCents),
@@ -64,17 +74,19 @@ function Fields({ item }: { item?: MenuItemRecord }) {
 }
 
 export default async function AdminCartaPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  const [rawItems, params] = await Promise.all([
+  const [rawItems, settings, params] = await Promise.all([
     prisma.menuItem.findMany({
       orderBy: [{ category: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
       select: ({
         id: true, name: true, description: true, category: true, ingredients: true, allergens: true,
         priceTapaCents: true, priceMediaCents: true, pricePlatoCents: true,
-        priceUnidadCents: true, priceCopaCents: true, priceBotellaCents: true,
+        priceUnidadCents: true, priceCanaCents: true, priceCortadaCents: true, priceTercioCents: true,
+        priceBotellaPequenaCents: true, priceBotellaGrandeCents: true, priceCopaCents: true, priceBotellaCents: true,
         price100gCents: true, priceCuartoKgCents: true, priceKiloCents: true,
         active: true, sortOrder: true, imageMime: true, updatedAt: true,
       } as any),
     }) as any,
+    prisma.siteSettings.findUnique({ where: { id: 1 }, select: ({ menuBreadPriceCents: true, menuBreadPublished: true, menuDayPriceCents: true } as any) }),
     searchParams,
   ]);
   const items = (rawItems as any[]).map((item) => ({
@@ -88,19 +100,41 @@ export default async function AdminCartaPage({ searchParams }: { searchParams: P
     deleted: "Elemento eliminado correctamente.",
     image_size: "La imagen supera 1,5 MB. Reduce su tamaño e inténtalo de nuevo.",
     image_format: "Formato de imagen no admitido. Utiliza JPG, PNG o WebP.",
+    price: "Configuración de pan/picos guardada correctamente.",
   };
   return (
     <div className="admin-page">
       <div className="section-head">
         <div><div className="eyebrow">Carta</div><h2>Platos, bebidas, vinos y chacina</h2><p>Gestiona categorías, formatos de precio, imágenes, ingredientes y alérgenos desde un único lugar.</p></div>
-        <a className="button primary" href="/api/admin/carta/pdf">Descargar carta actualizada (PDF)</a>
+        <a className="button primary" href="/api/admin/carta/pdf">Descargar carta PDF</a>
       </div>
       {params.status && feedback[params.status] ? <div className={`status-box ${params.status.startsWith("image_") ? "error" : "success"} admin-flash`} role="status">{params.status.startsWith("image_") ? "⚠" : "✓"} {feedback[params.status]}</div> : null}
+
+      <section className="card section-small">
+        <div className="eyebrow">Texto auxiliar en la carta</div>
+        <h3 style={{ marginTop: 6 }}>Servicio de pan/picos</h3>
+        <p className="muted">Esta frase aparecerá dentro de la carta pública y en el PDF solo si marcas la opción de publicar.</p>
+        <form action={updateMenuDayPrice} className="form-grid" style={{ marginTop: 14 }}>
+          <input type="hidden" name="redirectTo" value="/admin/carta" />
+          <div className="field">
+            <label>Precio del menú del día (€)</label>
+            <input name="menuDayPrice" required inputMode="decimal" defaultValue={euros(settings?.menuDayPriceCents ?? null)} placeholder="18,00" />
+          </div>
+          <div className="field">
+            <label>Servicio de pan/picos (€)</label>
+            <input name="menuBreadPrice" inputMode="decimal" defaultValue={euros(settings?.menuBreadPriceCents ?? null)} placeholder="1,00" />
+          </div>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 30 }}><input style={{ width: "auto" }} type="checkbox" name="menuBreadPublished" defaultChecked={settings?.menuBreadPublished ?? false} /> Mostrar la frase en la carta</label>
+          <div className="field" style={{ display: "flex", alignItems: "end" }}>
+            <button className="button primary" type="submit">Guardar configuración</button>
+          </div>
+        </form>
+      </section>
 
       <section className="card order-card admin-earth-card">
         <div className="eyebrow">Orden de aparición</div>
         <h3 style={{ marginTop: 6 }}>Arrastra los elementos dentro de cada categoría</h3>
-        <p className="muted">Cada categoría mantiene su propio orden, exactamente como se muestra después en la carta y en el PDF.</p>
+        <p className="muted">Cada categoría mantiene su propio orden, exactamente como se muestra después en la carta y en el PDF. En Bebidas puedes definir directamente precios distintos para caña, cortada, tercio y botella pequeña/grande.</p>
         {Object.values(MenuCategory).map((category) => {
           const categoryItems = items.filter((item) => item.category === category);
           if (!categoryItems.length) return null;

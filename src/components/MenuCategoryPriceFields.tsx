@@ -19,6 +19,11 @@ type PriceValues = {
   priceMedia?: string;
   pricePlato?: string;
   priceUnidad?: string;
+  priceCana?: string;
+  priceCortada?: string;
+  priceTercio?: string;
+  priceBotellaPequena?: string;
+  priceBotellaGrande?: string;
   priceCopa?: string;
   priceBotella?: string;
   price100g?: string;
@@ -51,7 +56,7 @@ export function MenuCategoryPriceFields({ category: initialCategory, prices }: {
         <div className="pricing-editor-head">
           <div>
             <label>Precios</label>
-            <p className="field-help">Los campos cambian según la categoría para que solo se muestren los formatos de venta que correspondan.</p>
+            <p className="field-help">Rellena únicamente los formatos que correspondan. Los que queden vacíos no se mostrarán al cliente.</p>
           </div>
         </div>
         <div className="pricing-fields-grid">
@@ -63,7 +68,16 @@ export function MenuCategoryPriceFields({ category: initialCategory, prices }: {
             </>
           ) : null}
 
-          {category === "BEBIDAS" ? <PriceInput name="priceUnidad" label="Unidad (€)" defaultValue={prices.priceUnidad} /> : null}
+          {category === "BEBIDAS" ? (
+            <>
+              <PriceInput name="priceUnidad" label="Unidad genérica (€)" defaultValue={prices.priceUnidad} />
+              <PriceInput name="priceCana" label="Caña (€)" defaultValue={prices.priceCana} />
+              <PriceInput name="priceCortada" label="Cortada (€)" defaultValue={prices.priceCortada} />
+              <PriceInput name="priceTercio" label="Tercio (€)" defaultValue={prices.priceTercio} />
+              <PriceInput name="priceBotellaPequena" label="Botella pequeña (€)" defaultValue={prices.priceBotellaPequena} />
+              <PriceInput name="priceBotellaGrande" label="Botella grande (€)" defaultValue={prices.priceBotellaGrande} />
+            </>
+          ) : null}
 
           {category === "VINOS" ? (
             <>

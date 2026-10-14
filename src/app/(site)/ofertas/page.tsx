@@ -7,7 +7,29 @@ export const metadata: Metadata = { title: "Ofertas" };
 export const dynamic = "force-dynamic";
 
 export default async function OffersPage() {
-  const items = await prisma.specialItem.findMany({ where: { type: SpecialType.OFERTA, active: true }, orderBy: [{ sortOrder: "asc" }, { name: "asc" }] });
+  const rawItems = await prisma.specialItem.findMany({
+    where: { type: SpecialType.OFERTA, active: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    select: ({
+      id: true,
+      type: true,
+      name: true,
+      description: true,
+      section: true,
+      priceCents: true,
+      ingredients: true,
+      allergens: true,
+      imageMime: true,
+      updatedAt: true,
+    } as any),
+  }) as any[];
+
+  const items = rawItems.map((item) => ({
+    ...item,
+    hasImage: Boolean(item.imageMime),
+    imageVersion: item.updatedAt instanceof Date ? item.updatedAt.getTime() : String(item.updatedAt ?? ""),
+  }));
+
   return (
     <div className="page">
       <div className="eyebrow">Promociones</div>

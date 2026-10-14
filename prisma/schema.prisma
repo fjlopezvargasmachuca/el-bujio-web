@@ -58,6 +58,8 @@ model SiteSettings {
   mapsUrl                String?  @default("https://www.google.com/maps/place//data=!4m2!3m1!1s0xd0d1472e8bb1e95:0x153d77a80ef824a8?sa=X&ved=1t:8290&ictx=111")
   openingHours           String   @default("martes|Cerrado\nmiércoles|11:00-23:00\njueves|11:00-23:00\nviernes|11:00-23:00\nsábado|11:00-23:00\ndomingo|11:00-17:00\nlunes|11:00-23:00")
   menuDayPriceCents      Int?
+  menuBreadPriceCents    Int?
+  menuBreadPublished     Boolean  @default(false)
   homeImage1Data         String?  @db.Text
   homeImage1Mime         String?
   homeImage1Title        String   @default("La venta y su terraza")
@@ -124,6 +126,11 @@ model MenuItem {
   priceMediaCents     Int?
   pricePlatoCents     Int?
   priceUnidadCents    Int?
+  priceCanaCents      Int?
+  priceCortadaCents   Int?
+  priceTercioCents    Int?
+  priceBotellaPequenaCents Int?
+  priceBotellaGrandeCents  Int?
   priceCopaCents      Int?
   priceBotellaCents   Int?
   price100gCents      Int?
@@ -163,6 +170,8 @@ model SpecialItem {
   priceCents  Int?
   ingredients String[]
   allergens   String[]
+  imageData   String?     @db.Text
+  imageMime   String?
   active      Boolean     @default(true)
   sortOrder   Int         @default(0)
   createdAt   DateTime    @default(now())

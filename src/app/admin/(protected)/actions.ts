@@ -143,6 +143,11 @@ export async function createMenuItem(formData: FormData) {
       priceMediaCents: parseEuroToCents(formData.get("priceMedia")),
       pricePlatoCents: parseEuroToCents(formData.get("pricePlato")),
       priceUnidadCents: parseEuroToCents(formData.get("priceUnidad")),
+      priceCanaCents: parseEuroToCents(formData.get("priceCana")),
+      priceCortadaCents: parseEuroToCents(formData.get("priceCortada")),
+      priceTercioCents: parseEuroToCents(formData.get("priceTercio")),
+      priceBotellaPequenaCents: parseEuroToCents(formData.get("priceBotellaPequena")),
+      priceBotellaGrandeCents: parseEuroToCents(formData.get("priceBotellaGrande")),
       priceCopaCents: parseEuroToCents(formData.get("priceCopa")),
       priceBotellaCents: parseEuroToCents(formData.get("priceBotella")),
       price100gCents: parseEuroToCents(formData.get("price100g")),
@@ -179,6 +184,11 @@ export async function updateMenuItem(id: string, formData: FormData) {
       priceMediaCents: parseEuroToCents(formData.get("priceMedia")),
       pricePlatoCents: parseEuroToCents(formData.get("pricePlato")),
       priceUnidadCents: parseEuroToCents(formData.get("priceUnidad")),
+      priceCanaCents: parseEuroToCents(formData.get("priceCana")),
+      priceCortadaCents: parseEuroToCents(formData.get("priceCortada")),
+      priceTercioCents: parseEuroToCents(formData.get("priceTercio")),
+      priceBotellaPequenaCents: parseEuroToCents(formData.get("priceBotellaPequena")),
+      priceBotellaGrandeCents: parseEuroToCents(formData.get("priceBotellaGrande")),
       priceCopaCents: parseEuroToCents(formData.get("priceCopa")),
       priceBotellaCents: parseEuroToCents(formData.get("priceBotella")),
       price100gCents: parseEuroToCents(formData.get("price100g")),
@@ -283,8 +293,10 @@ export async function reorderLandProducts(ids: string[]) {
 export async function createSpecialItem(formData: FormData) {
   await requireAdmin();
   const type = specialType(str(formData, "type"));
+  const image = await readMenuImage(formData);
+  if (image.error) redirect("/admin/especiales?status=image_" + image.error);
   await prisma.specialItem.create({
-    data: {
+    data: ({
       type,
       name: requiredName(formData),
       description: str(formData, "description", 1200) || null,
@@ -292,9 +304,11 @@ export async function createSpecialItem(formData: FormData) {
       priceCents: type === SpecialType.MENU_DIA ? null : parseEuroToCents(formData.get("price")),
       ingredients: splitCsv(formData.get("ingredients")),
       allergens: sanitizeAllergens(formData.getAll("allergens")),
+      imageData: image.imageData,
+      imageMime: image.imageMime,
       active: formData.get("active") === "on",
       sortOrder: await nextSpecialSortOrder(type),
-    },
+    }) as any,
   });
   revalidatePath(type === SpecialType.OFERTA ? "/ofertas" : "/menu-del-dia");
   revalidatePath("/admin");
@@ -304,13 +318,15 @@ export async function createSpecialItem(formData: FormData) {
 
 export async function updateSpecialItem(id: string, formData: FormData) {
   await requireAdmin();
-  const current = await prisma.specialItem.findUnique({ where: { id } });
+  const current = await prisma.specialItem.findUnique({ where: { id } }) as any;
   if (!current) return;
   const type = specialType(str(formData, "type"));
   const typeChanged = current.type !== type;
+  const image = await readMenuImage(formData, current);
+  if (image.error) redirect("/admin/especiales?status=image_" + image.error);
   await prisma.specialItem.update({
     where: { id },
-    data: {
+    data: ({
       type,
       name: requiredName(formData),
       description: str(formData, "description", 1200) || null,
@@ -318,9 +334,11 @@ export async function updateSpecialItem(id: string, formData: FormData) {
       priceCents: type === SpecialType.MENU_DIA ? null : parseEuroToCents(formData.get("price")),
       ingredients: splitCsv(formData.get("ingredients")),
       allergens: sanitizeAllergens(formData.getAll("allergens")),
+      imageData: image.imageData,
+      imageMime: image.imageMime,
       active: formData.get("active") === "on",
       ...(typeChanged ? { sortOrder: await nextSpecialSortOrder(type) } : {}),
-    },
+    }) as any,
   });
   revalidatePath("/menu-del-dia");
   revalidatePath("/ofertas");
@@ -353,14 +371,19 @@ export async function reorderSpecialItems(ids: string[]) {
 export async function updateMenuDayPrice(formData: FormData) {
   await requireAdmin();
   const price = parseEuroToCents(formData.get("menuDayPrice"));
+  const breadPrice = parseEuroToCents(formData.get("menuBreadPrice"));
+  const menuBreadPublished = formData.get("menuBreadPublished") === "on" && breadPrice != null;
+  const redirectTo = str(formData, "redirectTo", 120) || "/admin/especiales";
   await prisma.siteSettings.upsert({
     where: { id: 1 },
-    create: { id: 1, menuDayPriceCents: price, reservationEnabled: false },
-    update: { menuDayPriceCents: price },
+    create: ({ id: 1, menuDayPriceCents: price, menuBreadPriceCents: breadPrice, menuBreadPublished, reservationEnabled: false } as any),
+    update: ({ menuDayPriceCents: price, menuBreadPriceCents: breadPrice, menuBreadPublished } as any),
   });
   revalidatePath("/menu-del-dia");
+  revalidatePath("/carta");
+  revalidatePath("/admin/carta");
   revalidatePath("/admin/especiales");
-  redirect("/admin/especiales?status=price");
+  redirect(`${redirectTo}?status=price`);
 }
 
 export async function updateContact(formData: FormData) {

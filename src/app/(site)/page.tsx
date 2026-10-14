@@ -107,17 +107,15 @@ export default async function HomePage() {
       </section>
 
       <section className="home-features" aria-labelledby="sabores-title">
-        <Link className="feature-heading" href="/carta">
-          <div className="eyebrow">El Bujio</div>
+        <div className="feature-heading home-feature-heading">
           <h2 id="sabores-title">Sabores de siempre</h2>
           <p>Consulta nuestra carta, el menú del día, las ofertas o cómo llegar.</p>
-        </Link>
+        </div>
         <div className="showcase-grid feature-cross">
           {featureLinks.map((item) => (
             <Link className="showcase-item showcase-link earth-patch" href={item.href} key={item.href}>
               <strong>{item.title}</strong>
               <span>{item.text}</span>
-              <span className="showcase-arrow" aria-hidden="true">→</span>
             </Link>
           ))}
         </div>
@@ -127,7 +125,6 @@ export default async function HomePage() {
             <strong>Productos de la tierra</strong>
             <p>Miel, sal, aceite y otros productos seleccionados de la zona, disponibles por unidad.</p>
           </div>
-          <span className="land-home-arrow" aria-hidden="true">→</span>
         </Link>
       </section>
 
@@ -146,7 +143,7 @@ export default async function HomePage() {
           <div>
             <strong>¿Ya nos conoces?</strong>
             <p>También puedes abrir nuestra ficha en Google y dejar tu valoración.</p>
-            <a className="button primary" href={mapsUrl} target="_blank" rel="noreferrer">Ver en Google</a>
+            <a className="button primary review-google-button" href={mapsUrl} target="_blank" rel="noreferrer">Ver en Google</a>
           </div>
         </div>
       </section>

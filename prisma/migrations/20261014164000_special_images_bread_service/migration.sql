@@ -1,0 +1,7 @@
+ALTER TABLE "SiteSettings"
+  ADD COLUMN IF NOT EXISTS "menuBreadPriceCents" INTEGER,
+  ADD COLUMN IF NOT EXISTS "menuBreadPublished" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "SpecialItem"
+  ADD COLUMN IF NOT EXISTS "imageData" TEXT,
+  ADD COLUMN IF NOT EXISTS "imageMime" TEXT;

@@ -45,6 +45,11 @@ export type MenuPriceRecord = {
   priceMediaCents?: number | null;
   pricePlatoCents?: number | null;
   priceUnidadCents?: number | null;
+  priceCanaCents?: number | null;
+  priceCortadaCents?: number | null;
+  priceTercioCents?: number | null;
+  priceBotellaPequenaCents?: number | null;
+  priceBotellaGrandeCents?: number | null;
   priceCopaCents?: number | null;
   priceBotellaCents?: number | null;
   price100gCents?: number | null;
@@ -58,6 +63,11 @@ export function menuPricePairs(item: MenuPriceRecord) {
     ["Media", item.priceMediaCents],
     ["Plato", item.pricePlatoCents],
     ["Unidad", item.priceUnidadCents],
+    ["Caña", item.priceCanaCents],
+    ["Cortada", item.priceCortadaCents],
+    ["Tercio", item.priceTercioCents],
+    ["Botella pequeña", item.priceBotellaPequenaCents],
+    ["Botella grande", item.priceBotellaGrandeCents],
     ["Copa", item.priceCopaCents],
     ["Botella", item.priceBotellaCents],
     ["100 g", item.price100gCents],

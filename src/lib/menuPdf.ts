@@ -334,28 +334,26 @@ function drawHeader(page: PdfPage) {
 }
 
 function drawCover(page: PdfPage, phone: string) {
-  fillRect(page, 0, 0, PAGE_W, PAGE_H, [0.02, 0.018, 0.016]);
-  image(page, (PAGE_W - 150) / 2, 564, 150, 150);
-  centeredText(page, 510, "VENTA EL BUJIO", 29, true, [0.96, 0.92, 0.86]);
-  centeredText(page, 476, "SABORES DE SIEMPRE", 13, true, [0.84, 0.64, 0.38]);
-  centeredText(page, 448, "Cocina tradicional · producto cercano · Benamahoma", 9.4, false, [0.83, 0.76, 0.67]);
-  colorLine(page, 118, 416, PAGE_W - 118, 416, [0.42, 0.31, 0.23], 0.8);
+  fillRect(page, 0, 0, PAGE_W, PAGE_H, [0, 0, 0]);
+  // Bloque principal centrado verticalmente en la portada.
+  image(page, (PAGE_W - 168) / 2, 430, 168, 168);
+  centeredText(page, 402, "VENTA EL BUJIO", 15, true, [0.84, 0.64, 0.38]);
+  centeredText(page, 362, "SABORES DE SIEMPRE", 27, true, [0.96, 0.92, 0.86]);
+  centeredText(page, 328, "Cocina tradicional", 13, false, [0.84, 0.78, 0.7]);
+  colorLine(page, 140, 295, PAGE_W - 140, 295, [0.42, 0.31, 0.23], 0.8);
 
-  drawCategoryArtwork(page, "ENTRANTES", 150, 335, 48);
-  drawCategoryArtwork(page, "PESCADO", 222, 335, 48);
-  drawCategoryArtwork(page, "CARNES", 294, 335, 48);
-  drawCategoryArtwork(page, "VINOS", 366, 335, 48);
+  drawCategoryArtwork(page, "ENTRANTES", 164, 245, 34);
+  drawCategoryArtwork(page, "PESCADO", 234, 245, 34);
+  drawCategoryArtwork(page, "CARNES", 304, 245, 34);
+  drawCategoryArtwork(page, "VINOS", 374, 245, 34);
 
-  centeredText(page, 286, "Nuestra cocina, bebidas, vinos, chacina y productos de la tierra", 9, false, [0.88, 0.82, 0.73]);
-  centeredText(page, 255, `Para hacer reservas puede contactar al teléfono: ${phone}`, 9.2, true, [0.96, 0.92, 0.86]);
-  centeredText(page, 230, "Los ingredientes y alérgenos se muestran junto a cada elaboración cuando están registrados.", 7.3, false, [0.73, 0.66, 0.59]);
+  // La reserva aparece una única vez, al pie de la portada.
+  centeredText(page, 52, "Para hacer reservas puede contactar al teléfono: " + phone, 9.3, true, [0.96, 0.92, 0.86]);
 }
 
-function drawFooter(page: PdfPage, pageNumber: number, phone: string, withLegend = true) {
+function drawFooter(page: PdfPage, pageNumber: number, _phone: string, withLegend = true) {
   if (withLegend) {
     line(page, MARGIN, 104, PAGE_W - MARGIN, 104, 0.78);
-    text(page, MARGIN, 93, `Para hacer reservas puede contactar al teléfono: ${phone}`, 6.4, true, MUTED);
-    text(page, MARGIN, 81, "Alérgenos: confirma siempre con el personal la elaboración y posibles trazas.", 6.1, false, MUTED);
 
     const cols = 7;
     const cellW = CONTENT_W / cols;
@@ -363,19 +361,20 @@ function drawFooter(page: PdfPage, pageNumber: number, phone: string, withLegend
       const row = Math.floor(index / cols);
       const col = index % cols;
       const x = MARGIN + col * cellW;
-      const y = row === 0 ? 56 : 36;
+      const y = row === 0 ? 72 : 50;
       drawAllergenIcon(page, allergen.value, x, y - 3, 10, false);
       text(page, x + 12, y, LEGEND_LABELS[allergen.value] ?? allergen.value, 5.2, false, MUTED);
     });
   }
 
-  centeredText(page, 13, String(pageNumber), 7.2, true, withLegend ? MUTED : [0.78, 0.69, 0.6]);
+  centeredText(page, 17, String(pageNumber), 7.2, true, withLegend ? MUTED : [0.78, 0.69, 0.6]);
 }
 
 function drawCategory(page: PdfPage, y: number, label: string, category: string) {
   fillRect(page, MARGIN, y - CATEGORY_H + 4, CONTENT_W, CATEGORY_H - 4, INK);
   text(page, MARGIN + 10, y - 15, label.toUpperCase(), 9.5, true, EARTH_LIGHT);
-  drawCategoryArtwork(page, category, PAGE_W - MARGIN - 54, y - CATEGORY_H + 3, 42);
+  // Icono pequeño, completamente contenido dentro de la franja de categoría.
+  drawCategoryArtwork(page, category, PAGE_W - MARGIN - 27, y - CATEGORY_H + 8, 16);
 }
 
 function menuItemHeight(item: MenuPdfItem) {
@@ -463,9 +462,10 @@ function buildPdf(objects: PdfObject[]) {
 export function createMenuPdf(
   items: MenuPdfItem[],
   landProducts: LandPdfItem[],
-  options: { phone?: string } = {},
+  options: { phone?: string; breadServiceText?: string | null } = {},
 ) {
   const phone = cleanText(options.phone || "956 71 60 77");
+  const breadServiceText = cleanText(options.breadServiceText || "");
   const pages: PdfPage[] = [];
   let page: PdfPage = [];
   let y = TOP;
@@ -492,6 +492,11 @@ export function createMenuPdf(
   const isFreshPage = () => Math.abs(y - TOP) < 0.01;
 
   startPage();
+  if (breadServiceText) {
+    text(page, MARGIN, y - 8, breadServiceText, 8.4, true, [0.34, 0.22, 0.14]);
+    line(page, MARGIN, y - 16, PAGE_W - MARGIN, y - 16, 0.88);
+    y -= 28;
+  }
 
   for (const category of CATEGORY_ORDER) {
     const group = items.filter((item) => item.category === category);
