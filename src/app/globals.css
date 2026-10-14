@@ -968,3 +968,47 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
   .land-home-cta { min-height:118px; padding:20px; }
   .pricing-fields-grid { grid-template-columns:1fr; }
 }
+
+/* v1.12 · ajustes de identidad y tabla de alérgenos */
+.site-shell {
+  --bg:#000000;
+  background:#000000;
+  background-image:none;
+}
+.site-shell .site-main,
+.site-shell .site-sidebar,
+.site-shell .mobile-topbar {
+  background:#000000;
+}
+.site-shell .home-sign {
+  background:#000000;
+  border-color:rgba(234,216,190,.1);
+}
+
+/* Mantiene los encabezados de alérgenos visibles al hacer scroll vertical. */
+.allergen-table-wrap {
+  isolation:isolate;
+  position:relative;
+  overflow:auto;
+  scroll-padding-top:132px;
+}
+.allergen-table thead {
+  position:sticky;
+  top:0;
+  z-index:30;
+}
+.allergen-table thead th {
+  position:sticky;
+  top:0;
+  z-index:31;
+  color:#2a1d14!important;
+  background:#f2eadf!important;
+  background-clip:padding-box;
+  box-shadow:0 2px 0 rgba(35,49,58,.14);
+}
+.allergen-table thead .dish-column {
+  left:0;
+  z-index:34;
+  color:#2a1d14!important;
+  background:#f2eadf!important;
+}

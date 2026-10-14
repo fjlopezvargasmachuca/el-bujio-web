@@ -14,7 +14,7 @@ export async function GET() {
       where: { active: true },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
       select: ({
-        name: true, category: true, description: true, allergens: true,
+        name: true, category: true, description: true, ingredients: true, allergens: true,
         priceTapaCents: true, priceMediaCents: true, pricePlatoCents: true,
         priceUnidadCents: true, priceCopaCents: true, priceBotellaCents: true,
         price100gCents: true, priceCuartoKgCents: true, priceKiloCents: true,
