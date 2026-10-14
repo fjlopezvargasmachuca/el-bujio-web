@@ -62,7 +62,7 @@ export function menuPricePairs(item: MenuPriceRecord) {
     ["Tapa", item.priceTapaCents],
     ["Media", item.priceMediaCents],
     ["Plato", item.pricePlatoCents],
-    ["Unidad", item.priceUnidadCents],
+    ["", item.priceUnidadCents],
     ["Caña", item.priceCanaCents],
     ["Cortada", item.priceCortadaCents],
     ["Tercio", item.priceTercioCents],

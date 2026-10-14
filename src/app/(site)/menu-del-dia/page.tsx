@@ -68,7 +68,7 @@ export default async function DailyMenuPage() {
       )}
 
       <p className="muted" style={{ marginTop: 26, maxWidth: 760 }}>
-        Bebidas, servicio de pan y mesa no incluidas en el precio.
+        * Servicio pan/picos y bebidas no incluidas
       </p>
     </div>
   );

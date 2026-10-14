@@ -413,11 +413,13 @@ export async function updateContact(formData: FormData) {
   const sharedData = {
     phone: str(formData, "phone", 30),
     address: str(formData, "address", 240),
+    addressNote: str(formData, "addressNote", 800),
     contactText: str(formData, "contactText", 800),
     instagramUrl: safeHttpUrl(str(formData, "instagramUrl", 500)),
     facebookUrl: safeHttpUrl(str(formData, "facebookUrl", 500)),
     mapsUrl: safeHttpUrl(str(formData, "mapsUrl", 900)),
     openingHours: str(formData, "openingHours", 1200),
+    holidayHours: str(formData, "holidayHours", 500) || "Consultar horario en festivos",
     homeImage1Data: homeImage1.imageData,
     homeImage1Mime: homeImage1.imageMime,
     homeImage1Title: str(formData, "homeImage1Title", 120) || "La venta y su terraza",

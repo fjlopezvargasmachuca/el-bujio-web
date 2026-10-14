@@ -6,8 +6,10 @@ export function PricePills(props: MenuPriceRecord) {
 
   return (
     <div className="price-row">
-      {prices.map(([label, value]) => (
-        <span className="price-pill" key={label}><strong>{label}:</strong> {formatPrice(value)}</span>
+      {prices.map(([label, value], index) => (
+        <span className="price-pill" key={`${label || "precio"}-${index}`}>
+          {label ? <><strong>{label}:</strong> </> : null}{formatPrice(value)}
+        </span>
       ))}
     </div>
   );

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 function formatPrice(cents: number | null | undefined) {
   if (cents == null) return null;
-  return `${(cents / 100).toFixed(2).replace(".", ",")} EUR`;
+  return `${(cents / 100).toFixed(2).replace(".", ",")} €`;
 }
 
 export async function GET() {

@@ -1103,3 +1103,47 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
     width:min(100%, 620px);
   }
 }
+
+/* v1.15 · refinado de inicio y contacto */
+.feature-cross .showcase-item {
+  align-content:center;
+  justify-content:stretch;
+}
+.feature-cross .showcase-item strong,
+.feature-cross .showcase-item span {
+  align-self:center;
+}
+.place-gallery-head {
+  align-items:center;
+}
+.place-gallery-description {
+  max-width:none!important;
+  white-space:nowrap;
+  margin-top:10px!important;
+}
+.land-home-cta {
+  align-items:center;
+}
+.land-home-cta > div {
+  display:grid;
+  align-content:center;
+}
+.contact-address-note {
+  margin:8px 0 0;
+  max-width:42rem;
+}
+.holiday-hours-row {
+  margin-top:4px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+}
+
+@media (max-width:980px) {
+  .place-gallery-description {
+    white-space:normal;
+  }
+}
+.feature-cross .showcase-item {
+  justify-items:center;
+  text-align:center;
+}

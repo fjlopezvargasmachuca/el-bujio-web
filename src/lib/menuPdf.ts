@@ -59,7 +59,7 @@ function cleanText(value: string) {
     .replace(/[–—]/g, "-")
     .replace(/“|”/g, '"')
     .replace(/’/g, "'")
-    .replace(/€/g, "EUR")
+    .replace(/€/g, "\x80")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -119,13 +119,13 @@ function image(page: PdfPage, x: number, y: number, w: number, h: number) {
 
 function price(cents?: number | null) {
   if (cents == null) return null;
-  return `${(cents / 100).toFixed(2).replace(".", ",")} EUR`;
+  return `${(cents / 100).toFixed(2).replace(".", ",")} €`;
 }
 
 function priceText(item: MenuPdfItem) {
   return menuPricePairs(item)
     .filter(([, value]) => value != null)
-    .map(([label, value]) => `${label} ${price(value)}`)
+    .map(([label, value]) => label ? `${label} ${price(value)}` : `${price(value)}`)
     .join(" · ");
 }
 
@@ -351,9 +351,13 @@ function drawCover(page: PdfPage, phone: string) {
   centeredText(page, 52, "Para hacer reservas puede contactar al teléfono: " + phone, 9.3, true, [0.96, 0.92, 0.86]);
 }
 
-function drawFooter(page: PdfPage, pageNumber: number, _phone: string, withLegend = true) {
+function drawFooter(page: PdfPage, pageNumber: number, _phone: string, withLegend = true, breadServiceText = "") {
   if (withLegend) {
-    line(page, MARGIN, 104, PAGE_W - MARGIN, 104, 0.78);
+    line(page, MARGIN, 108, PAGE_W - MARGIN, 108, 0.78);
+
+    if (breadServiceText) {
+      text(page, MARGIN, 96, `* ${breadServiceText}`, 6.2, true, MUTED);
+    }
 
     const cols = 7;
     const cellW = CONTENT_W / cols;
@@ -361,7 +365,7 @@ function drawFooter(page: PdfPage, pageNumber: number, _phone: string, withLegen
       const row = Math.floor(index / cols);
       const col = index % cols;
       const x = MARGIN + col * cellW;
-      const y = row === 0 ? 72 : 50;
+      const y = row === 0 ? 70 : 48;
       drawAllergenIcon(page, allergen.value, x, y - 3, 10, false);
       text(page, x + 12, y, LEGEND_LABELS[allergen.value] ?? allergen.value, 5.2, false, MUTED);
     });
@@ -431,7 +435,7 @@ function drawMenuItem(page: PdfPage, y: number, item: MenuPdfItem) {
 
 function drawLandItem(page: PdfPage, y: number, item: LandPdfItem) {
   text(page, MARGIN + 4, y - 13, truncate(item.name, 52), 10, true);
-  if (item.priceCents != null) text(page, PAGE_W - MARGIN - 92, y - 13, `Unidad ${price(item.priceCents)}`, 7.8, true, [0.34, 0.22, 0.14]);
+  if (item.priceCents != null) text(page, PAGE_W - MARGIN - 72, y - 13, `${price(item.priceCents)}`, 7.8, true, [0.34, 0.22, 0.14]);
   if (item.description) text(page, MARGIN + 4, y - 29, truncate(item.description, 90), 7.2, false, [0.41, 0.33, 0.27]);
   line(page, MARGIN, y - LAND_ITEM_H, PAGE_W - MARGIN, y - LAND_ITEM_H, 0.88);
 }
@@ -492,11 +496,6 @@ export function createMenuPdf(
   const isFreshPage = () => Math.abs(y - TOP) < 0.01;
 
   startPage();
-  if (breadServiceText) {
-    text(page, MARGIN, y - 8, breadServiceText, 8.4, true, [0.34, 0.22, 0.14]);
-    line(page, MARGIN, y - 16, PAGE_W - MARGIN, y - 16, 0.88);
-    y -= 28;
-  }
 
   for (const category of CATEGORY_ORDER) {
     const group = items.filter((item) => item.category === category);
@@ -552,7 +551,7 @@ export function createMenuPdf(
   }
 
   endPage();
-  pages.forEach((pageCommands, index) => drawFooter(pageCommands, index + 1, phone, index > 0));
+  pages.forEach((pageCommands, index) => drawFooter(pageCommands, index + 1, phone, index > 0, breadServiceText));
 
   const logo = Buffer.from(PDF_LOGO_JPEG_BASE64, "base64");
 

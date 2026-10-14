@@ -67,7 +67,7 @@ export default async function HomePage() {
 
       <section className="home-intro">
         <div className="home-intro-copy">
-          <div className="eyebrow">Venta tradicional · cocina casera · Benamahoma</div>
+          <div className="eyebrow">Venta tradicional · cocina casera</div>
           <p>
             Cocina tradicional, producto cercano y platos de siempre. Consulta lo que tenemos preparado hoy
             y encuentra toda la información de la venta antes de venir a vernos.
@@ -81,9 +81,8 @@ export default async function HomePage() {
       <section className="section-compact place-gallery-section" aria-labelledby="lugar-title">
         <div className="section-head place-gallery-head">
           <div>
-            <div className="eyebrow">Benamahoma · Sierra de Grazalema</div>
-            <h2 id="lugar-title">Un lugar para disfrutar sin prisas</h2>
-            <p>La venta se encuentra en un entorno natural privilegiado, junto a Benamahoma y muy cerca del sendero del río Majaceite.</p>
+            <div className="eyebrow" id="lugar-title">Benamahoma · Sierra de Grazalema</div>
+            <p className="place-gallery-description">La venta se encuentra en un entorno natural privilegiado, junto a Benamahoma y muy cerca del sendero del río Majaceite.</p>
           </div>
         </div>
         <div className="place-gallery">
@@ -121,9 +120,8 @@ export default async function HomePage() {
         </div>
         <Link className="land-home-cta" href="/productos-de-la-tierra">
           <div>
-            <span className="eyebrow">Para llevar</span>
             <strong>Productos de la tierra</strong>
-            <p>Miel, sal, aceite y otros productos seleccionados de la zona, disponibles por unidad.</p>
+            <p>Una selección de productos locales y sabores de la zona, elegidos con el mismo mimo que nuestra cocina.</p>
           </div>
         </Link>
       </section>

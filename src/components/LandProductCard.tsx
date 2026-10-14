@@ -31,7 +31,7 @@ export function LandProductCard({ item }: { item: LandProduct }) {
           <span className="accent">Ver detalle →</span>
         </div>
         {item.description ? <p>{item.description}</p> : null}
-        {item.priceCents != null ? <div className="price-row"><span className="price-pill"><strong>Unidad:</strong> {formatPrice(item.priceCents)}</span></div> : null}
+        {item.priceCents != null ? <div className="price-row"><span className="price-pill">{formatPrice(item.priceCents)}</span></div> : null}
       </button>
       {open ? (
         <div className="modal-backdrop" role="presentation" onMouseDown={() => setOpen(false)}>
@@ -42,7 +42,7 @@ export function LandProductCard({ item }: { item: LandProduct }) {
             </div>
             <div className="dish-detail-image-wrap"><img className="dish-detail-image" src={imageSrc} alt={`Imagen de ${item.name}`} /></div>
             {item.description ? <p className="muted">{item.description}</p> : null}
-            {item.priceCents != null ? <div className="price-row"><span className="price-pill"><strong>Unidad:</strong> {formatPrice(item.priceCents)}</span></div> : null}
+            {item.priceCents != null ? <div className="price-row"><span className="price-pill">{formatPrice(item.priceCents)}</span></div> : null}
           </section>
         </div>
       ) : null}

@@ -16,13 +16,13 @@ function Fields({ item }: { item?: LandProductRecord }) {
   return (
     <div className="form-grid">
       <div className="field"><label>Nombre</label><input name="name" required defaultValue={item?.name ?? ""} /></div>
-      <div className="field"><label>Precio por unidad (€)</label><input name="price" inputMode="decimal" defaultValue={euros(item?.priceCents)} placeholder="0,00" /></div>
+      <div className="field"><label>Precio (€)</label><input name="price" inputMode="decimal" defaultValue={euros(item?.priceCents)} placeholder="0,00" /></div>
       <div className="field full"><label>Descripción</label><textarea name="description" defaultValue={item?.description ?? ""} /></div>
       <div className="field full">
         <label>Imagen del producto</label>
         <p className="field-help">JPG, PNG o WebP. Máximo 1,5 MB. Si no subes una imagen se usa una ilustración genérica.</p>
         <div className="admin-dish-image-row">
-          {item ? <img className="admin-dish-image-preview" src={landProductImageSrc(item)} alt={`Vista previa de ${item.name}`} /> : null}
+          {item ? <img className="admin-dish-image-preview" src={landProductImageSrc(item)} alt={`Vista previa de ${item.name}`} /> : <img className="admin-dish-image-preview" src="/products/productos-tierra.svg" alt="Vista previa genérica del producto" />}
           <div className="admin-dish-image-controls">
             <input name="image" type="file" accept="image/jpeg,image/png,image/webp" />
             {item?.hasImage ? <label className="inline-check"><input type="checkbox" name="removeImage" /> Eliminar imagen subida y usar la genérica</label> : null}
@@ -50,7 +50,7 @@ export default async function AdminLandProductsPage({ searchParams }: { searchPa
 
   return (
     <div className="admin-page">
-      <div className="section-head"><div><div className="eyebrow">Tienda</div><h2>Productos de la tierra</h2><p>Gestiona productos por unidad como miel, sal, aceite u otros artículos para llevar.</p></div></div>
+      <div className="section-head"><div><div className="eyebrow">Tienda</div><h2>Productos de la tierra</h2><p>Gestiona productos de la zona con su precio, imagen, visibilidad y orden de aparición.</p></div></div>
       {params.status && feedback[params.status] ? <div className={`status-box ${params.status.startsWith("image_") ? "error" : "success"} admin-flash`} role="status">{params.status.startsWith("image_") ? "⚠" : "✓"} {feedback[params.status]}</div> : null}
 
       <section className="card order-card admin-earth-card">

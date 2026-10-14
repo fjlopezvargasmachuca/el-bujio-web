@@ -53,10 +53,12 @@ model SiteSettings {
   phone                  String   @default("956 71 60 77")
   address                String   @default("Venta El Bujio · Benamahoma, Cádiz")
   contactText            String   @default("Llámanos para cualquier consulta sobre la carta, el menú del día, los horarios o la venta.")
+  addressNote            String   @default("")
   instagramUrl           String?
   facebookUrl            String?
   mapsUrl                String?  @default("https://www.google.com/maps/place//data=!4m2!3m1!1s0xd0d1472e8bb1e95:0x153d77a80ef824a8?sa=X&ved=1t:8290&ictx=111")
   openingHours           String   @default("martes|Cerrado\nmiércoles|11:00-23:00\njueves|11:00-23:00\nviernes|11:00-23:00\nsábado|11:00-23:00\ndomingo|11:00-17:00\nlunes|11:00-23:00")
+  holidayHours           String   @default("Consultar horario en festivos")
   menuDayPriceCents      Int?
   menuBreadPriceCents    Int?
   menuBreadPublished     Boolean  @default(false)
