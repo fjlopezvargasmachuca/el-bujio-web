@@ -16,7 +16,7 @@ type Dish = MenuPriceRecord & {
   allergens: string[];
 };
 
-export function DishCard({ item }: { item: Dish }) {
+export function DishCard({ item, hidePrices = false }: { item: Dish; hidePrices?: boolean }) {
   const [open, setOpen] = useState(false);
   const imageSrc = dishImageSrc(item);
   const prices = {
@@ -50,7 +50,7 @@ export function DishCard({ item }: { item: Dish }) {
           <span className="accent">Ver detalle →</span>
         </div>
         {item.description ? <p>{item.description}</p> : null}
-        <PricePills {...prices} />
+        {!hidePrices ? <PricePills {...prices} /> : null}
       </button>
       {open ? (
         <div className="modal-backdrop" role="presentation" onMouseDown={() => setOpen(false)}>
@@ -66,7 +66,7 @@ export function DishCard({ item }: { item: Dish }) {
               <img className="dish-detail-image" src={imageSrc} alt={`Imagen de ${item.name}`} />
             </div>
             {item.description ? <p className="muted">{item.description}</p> : null}
-            <PricePills {...prices} />
+            {!hidePrices ? <PricePills {...prices} /> : null}
             <div className="hr" />
             <h3>Ingredientes</h3>
             <div className="tag-row" style={{ marginTop: 10 }}>

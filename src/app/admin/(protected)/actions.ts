@@ -290,26 +290,60 @@ export async function reorderLandProducts(ids: string[]) {
   revalidatePath("/admin/productos-tierra");
 }
 
+function selectedIds(formData: FormData, key: string, max = 20) {
+  return Array.from(new Set(formData.getAll(key).map((value) => String(value).trim()).filter(Boolean))).slice(0, max);
+}
+
+async function selectedDishes(ids: string[]) {
+  if (!ids.length) return [];
+  const dishes = await prisma.menuItem.findMany({ where: { id: { in: ids } } });
+  const byId = new Map(dishes.map((dish) => [dish.id, dish]));
+  return ids.map((id) => byId.get(id)).filter(Boolean) as typeof dishes;
+}
+
 export async function createSpecialItem(formData: FormData) {
   await requireAdmin();
   const type = specialType(str(formData, "type"));
-  const image = await readMenuImage(formData);
-  if (image.error) redirect("/admin/especiales?status=image_" + image.error);
-  await prisma.specialItem.create({
-    data: ({
-      type,
-      name: requiredName(formData),
-      description: str(formData, "description", 1200) || null,
-      section: type === SpecialType.MENU_DIA ? menuSection(str(formData, "section", 40)) : null,
-      priceCents: type === SpecialType.MENU_DIA ? null : parseEuroToCents(formData.get("price")),
-      ingredients: splitCsv(formData.get("ingredients")),
-      allergens: sanitizeAllergens(formData.getAll("allergens")),
-      imageData: image.imageData,
-      imageMime: image.imageMime,
-      active: formData.get("active") === "on",
-      sortOrder: await nextSpecialSortOrder(type),
-    }) as any,
+  const ids = type === SpecialType.MENU_DIA
+    ? selectedIds(formData, "menuItemId", 1)
+    : selectedIds(formData, "menuItemIds", 12);
+  const dishes = await selectedDishes(ids);
+
+  if (!dishes.length || dishes.length !== ids.length) {
+    redirect("/admin/especiales?status=selection_required");
+  }
+
+  const section = type === SpecialType.MENU_DIA ? menuSection(str(formData, "section", 40)) : null;
+  if (type === SpecialType.MENU_DIA && !section) {
+    redirect("/admin/especiales?status=section_required");
+  }
+
+  const offerName = type === SpecialType.OFERTA ? requiredName(formData) : dishes[0].name;
+  const offerPrice = type === SpecialType.OFERTA ? parseEuroToCents(formData.get("price")) : null;
+  if (type === SpecialType.OFERTA && offerPrice == null) {
+    redirect("/admin/especiales?status=offer_price_required");
+  }
+
+  const sortOrder = await nextSpecialSortOrder(type);
+  await prisma.$transaction(async (tx) => {
+    const special = await tx.specialItem.create({
+      data: {
+        type,
+        name: offerName,
+        description: type === SpecialType.OFERTA ? (str(formData, "description", 1200) || null) : null,
+        section,
+        priceCents: offerPrice,
+        ingredients: [],
+        allergens: [],
+        active: formData.get("active") === "on",
+        sortOrder,
+      },
+    });
+    await (tx as any).specialSelection.createMany({
+      data: ids.map((menuItemId, index) => ({ specialItemId: special.id, menuItemId, sortOrder: index })),
+    });
   });
+
   revalidatePath(type === SpecialType.OFERTA ? "/ofertas" : "/menu-del-dia");
   revalidatePath("/admin");
   revalidatePath("/admin/especiales");
@@ -318,28 +352,54 @@ export async function createSpecialItem(formData: FormData) {
 
 export async function updateSpecialItem(id: string, formData: FormData) {
   await requireAdmin();
-  const current = await prisma.specialItem.findUnique({ where: { id } }) as any;
+  const current = await prisma.specialItem.findUnique({ where: { id } });
   if (!current) return;
+
   const type = specialType(str(formData, "type"));
+  const ids = type === SpecialType.MENU_DIA
+    ? selectedIds(formData, "menuItemId", 1)
+    : selectedIds(formData, "menuItemIds", 12);
+  const dishes = await selectedDishes(ids);
+
+  if (!dishes.length || dishes.length !== ids.length) {
+    redirect("/admin/especiales?status=selection_required");
+  }
+
+  const section = type === SpecialType.MENU_DIA ? menuSection(str(formData, "section", 40)) : null;
+  if (type === SpecialType.MENU_DIA && !section) {
+    redirect("/admin/especiales?status=section_required");
+  }
+
+  const offerName = type === SpecialType.OFERTA ? requiredName(formData) : dishes[0].name;
+  const offerPrice = type === SpecialType.OFERTA ? parseEuroToCents(formData.get("price")) : null;
+  if (type === SpecialType.OFERTA && offerPrice == null) {
+    redirect("/admin/especiales?status=offer_price_required");
+  }
+
   const typeChanged = current.type !== type;
-  const image = await readMenuImage(formData, current);
-  if (image.error) redirect("/admin/especiales?status=image_" + image.error);
-  await prisma.specialItem.update({
-    where: { id },
-    data: ({
-      type,
-      name: requiredName(formData),
-      description: str(formData, "description", 1200) || null,
-      section: type === SpecialType.MENU_DIA ? menuSection(str(formData, "section", 40)) : null,
-      priceCents: type === SpecialType.MENU_DIA ? null : parseEuroToCents(formData.get("price")),
-      ingredients: splitCsv(formData.get("ingredients")),
-      allergens: sanitizeAllergens(formData.getAll("allergens")),
-      imageData: image.imageData,
-      imageMime: image.imageMime,
-      active: formData.get("active") === "on",
-      ...(typeChanged ? { sortOrder: await nextSpecialSortOrder(type) } : {}),
-    }) as any,
+  const nextOrder = typeChanged ? await nextSpecialSortOrder(type) : current.sortOrder;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.specialItem.update({
+      where: { id },
+      data: {
+        type,
+        name: offerName,
+        description: type === SpecialType.OFERTA ? (str(formData, "description", 1200) || null) : null,
+        section,
+        priceCents: offerPrice,
+        ingredients: [],
+        allergens: [],
+        active: formData.get("active") === "on",
+        sortOrder: nextOrder,
+      },
+    });
+    await (tx as any).specialSelection.deleteMany({ where: { specialItemId: id } });
+    await (tx as any).specialSelection.createMany({
+      data: ids.map((menuItemId, index) => ({ specialItemId: id, menuItemId, sortOrder: index })),
+    });
   });
+
   revalidatePath("/menu-del-dia");
   revalidatePath("/ofertas");
   revalidatePath("/admin");

@@ -20,11 +20,11 @@ export default async function ContactPage() {
       <h1 style={{ fontSize: "clamp(3rem,7vw,5.5rem)" }}>Contacto</h1>
       <div className="contact-panel" style={{ marginTop: 30 }}>
         <div className="card">
-          <div className="muted">Teléfono</div>
+          <div className="muted">Teléfono:</div>
           <a className="contact-big accent" href={`tel:${phone.replace(/\s/g, "")}`}>{phone}</a>
           <p className="muted">{settings?.contactText ?? "Llámanos para cualquier consulta sobre la carta, horarios o la venta."}</p>
 
-          <div className="muted" style={{ marginTop: 18 }}>Dirección</div>
+          <div className="muted" style={{ marginTop: 18 }}>Dirección:</div>
           <div className="contact-address">{settings?.address ?? "Venta El Bujio · Benamahoma, Cádiz"}</div>
           {settings?.addressNote ? <p className="muted contact-address-note">{settings.addressNote}</p> : null}
 
@@ -37,7 +37,7 @@ export default async function ContactPage() {
         </div>
 
         <div className="card">
-          <div className="muted">Cómo llegar</div>
+          <div className="muted">Cómo llegar:</div>
           <div className="map-embed-wrap">
             <iframe
               className="map-iframe"
@@ -57,7 +57,7 @@ export default async function ContactPage() {
             </a>
           </div>
           <div className="hr" style={{ margin: "22px 0" }} />
-          <div className="muted">Horario</div>
+          <div className="muted">Horario:</div>
           <div className="hours-list" style={{ marginTop: 14 }}>
             {openingHours.map((item) => (
               <div className="hours-row" key={item.day}>

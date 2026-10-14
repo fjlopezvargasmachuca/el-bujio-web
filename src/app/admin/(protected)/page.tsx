@@ -17,10 +17,6 @@ export default async function AdminDashboard() {
     <div className="admin-page">
       <div className="section-head">
         <div><div className="eyebrow">Panel de control</div><h2>Resumen</h2><p>Gestiona la carta, productos para llevar, contenido diario y datos públicos de la venta.</p></div>
-        <div className="row-actions">
-          <a className="button primary" href="/api/admin/carta/pdf">Descargar carta PDF</a>
-          <Link className="button" href="/admin/carta">Gestionar carta</Link>
-        </div>
       </div>
 
       <div className="admin-grid">
@@ -35,12 +31,12 @@ export default async function AdminDashboard() {
           <div className="eyebrow">Carta</div>
           <h3 style={{ marginTop: 5 }}>Comida, bebidas, vinos y chacina</h3>
           <p className="muted">Gestiona imágenes, alérgenos y formatos de precio: tapa, ración, unidad, copa, botella o peso.</p>
-          <div className="row-actions"><Link className="button" href="/admin/carta">Editar carta</Link><a className="button primary" href="/api/admin/carta/pdf">Generar PDF</a></div>
+          <div className="row-actions"><Link className="button" href="/admin/carta">Editar carta</Link><a className="button primary" href="/api/admin/carta/pdf">Imprimir carta</a></div>
         </section>
         <section className="card">
           <div className="eyebrow">Para llevar</div>
           <h3 style={{ marginTop: 5 }}>Productos de la tierra</h3>
-          <p className="muted">Añade miel, sal, aceite u otros productos con precio por unidad, imagen, visibilidad y orden manual.</p>
+          <p className="muted">Añade productos de la zona con su precio, imagen, visibilidad y orden manual.</p>
           <Link className="button" href="/admin/productos-tierra">Editar productos</Link>
         </section>
         <section className="card">
@@ -65,6 +61,7 @@ export default async function AdminDashboard() {
           <div className="eyebrow">Contacto publicado</div>
           <h3 style={{ marginTop: 5 }}>{settings?.phone ?? "Pendiente"}</h3>
           <p className="muted">Teléfono mostrado actualmente a los clientes.</p>
+          <Link className="button" href="/admin/contacto">Editar contactos</Link>
         </section>
       </div>
     </div>

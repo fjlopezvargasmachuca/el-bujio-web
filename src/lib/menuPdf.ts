@@ -353,11 +353,12 @@ function drawCover(page: PdfPage, phone: string) {
 
 function drawFooter(page: PdfPage, pageNumber: number, _phone: string, withLegend = true, breadServiceText = "") {
   if (withLegend) {
-    line(page, MARGIN, 108, PAGE_W - MARGIN, 108, 0.78);
+    line(page, MARGIN, 112, PAGE_W - MARGIN, 112, 0.78);
 
     if (breadServiceText) {
-      text(page, MARGIN, 96, `* ${breadServiceText}`, 6.2, true, MUTED);
+      text(page, MARGIN, 100, `* ${breadServiceText}`, 6.2, true, MUTED);
     }
+    text(page, MARGIN, 90, "* IVA incluido en los precios de la carta.", 6.2, true, MUTED);
 
     const cols = 7;
     const cellW = CONTENT_W / cols;
@@ -365,7 +366,7 @@ function drawFooter(page: PdfPage, pageNumber: number, _phone: string, withLegen
       const row = Math.floor(index / cols);
       const col = index % cols;
       const x = MARGIN + col * cellW;
-      const y = row === 0 ? 70 : 48;
+      const y = row === 0 ? 65 : 43;
       drawAllergenIcon(page, allergen.value, x, y - 3, 10, false);
       text(page, x + 12, y, LEGEND_LABELS[allergen.value] ?? allergen.value, 5.2, false, MUTED);
     });

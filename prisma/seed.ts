@@ -188,29 +188,46 @@ async function main() {
     }
   }
 
-  // Menú del día de ejemplo para bases nuevas.
+  // Menú del día de ejemplo para bases nuevas. Desde v1.16 reutiliza
+  // platos de la carta para evitar duplicar nombre, imagen, ingredientes y alérgenos.
   if ((await prisma.specialItem.count({ where: { type: SpecialType.MENU_DIA } })) === 0) {
+    const menuLinks = [
+      ["Ensalada mixta", "Primeros"],
+      ["Croqueta", "Primeros"],
+      ["Carrillada", "Segundos"],
+      ["Calamares fritos", "Segundos"],
+      ["Flan casero", "Postres"],
+      ["Tarta de queso", "Postres"],
+    ] as const;
     let specialOrder = -1;
-    for (const [name, section, ingredients, allergens] of menuDiaItems) {
+    for (const [dishName, section] of menuLinks) {
+      const dish = await prisma.menuItem.findFirst({ where: { name: dishName }, orderBy: { sortOrder: "asc" } });
+      if (!dish) continue;
       specialOrder += 1;
       await prisma.specialItem.create({
-        data: {
+        data: ({
           type: SpecialType.MENU_DIA,
-          name,
+          name: dish.name,
           section,
-          ingredients: [...ingredients],
-          allergens: [...allergens],
+          ingredients: [],
+          allergens: [],
           sortOrder: specialOrder,
           active: true,
           priceCents: null,
-        },
+          selections: { create: { menuItemId: dish.id, sortOrder: 0 } },
+        }) as any,
       });
     }
   }
 
   if ((await prisma.specialItem.count({ where: { type: SpecialType.OFERTA } })) === 0) {
+    const offerDishes = await prisma.menuItem.findMany({
+      where: { name: { in: ["Croqueta", "Papas bravas"] } },
+      orderBy: { sortOrder: "asc" },
+      take: 2,
+    });
     await prisma.specialItem.create({
-      data: {
+      data: ({
         type: SpecialType.OFERTA,
         name: "Oferta del día",
         description: "Promoción editable desde administración.",
@@ -219,7 +236,10 @@ async function main() {
         allergens: [],
         sortOrder: 0,
         active: false,
-      },
+        selections: offerDishes.length ? {
+          create: offerDishes.map((dish, index) => ({ menuItemId: dish.id, sortOrder: index })),
+        } : undefined,
+      }) as any,
     });
   }
 

@@ -1,10 +1,9 @@
 import { SpecialType } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { categoryLabel } from "@/lib/format";
 import { createSpecialItem, deleteSpecialItem, updateMenuDayPrice, updateSpecialItem } from "../actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { AllergenSelector } from "@/components/AllergenSelector";
 import { SortableOrderList } from "@/components/SortableOrderList";
-import { specialImageSrc } from "@/lib/specialImages";
 
 export const dynamic = "force-dynamic";
 
@@ -12,58 +11,139 @@ function euros(cents: number | null | undefined) {
   return cents == null ? "" : String(cents / 100).replace(".", ",");
 }
 
-type Special = NonNullable<Awaited<ReturnType<typeof prisma.specialItem.findFirst>>> & {
-  hasImage?: boolean;
-  imageVersion?: string | number | null;
+type DishOption = {
+  id: string;
+  name: string;
+  category: string;
+  active: boolean;
 };
 
-function Fields({ item }: { item?: Special }) {
-  const isMenu = item?.type !== SpecialType.OFERTA;
+type SpecialRecord = {
+  id: string;
+  type: SpecialType;
+  name: string;
+  description: string | null;
+  section: string | null;
+  priceCents: number | null;
+  active: boolean;
+  sortOrder: number;
+  selections: Array<{ menuItemId: string; sortOrder: number; menuItem: DishOption }>;
+};
+
+function DishSelect({ dishes, selectedId }: { dishes: DishOption[]; selectedId?: string }) {
+  return (
+    <select name="menuItemId" defaultValue={selectedId ?? ""} required>
+      <option value="">Selecciona un plato de la carta</option>
+      {Array.from(new Set(dishes.map((dish) => dish.category))).map((category) => (
+        <optgroup key={category} label={categoryLabel(category)}>
+          {dishes.filter((dish) => dish.category === category).map((dish) => (
+            <option key={dish.id} value={dish.id}>{dish.name}{dish.active ? "" : " · oculto en carta"}</option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
+  );
+}
+
+function DishCheckboxes({ dishes, selectedIds = [] }: { dishes: DishOption[]; selectedIds?: string[] }) {
+  const selected = new Set(selectedIds);
+  const categories = Array.from(new Set(dishes.map((dish) => dish.category)));
+  return (
+    <div className="special-dish-selector">
+      {categories.map((category) => (
+        <fieldset key={category}>
+          <legend>{categoryLabel(category)}</legend>
+          <div className="special-dish-checks">
+            {dishes.filter((dish) => dish.category === category).map((dish) => (
+              <label className="inline-check special-dish-check" key={dish.id}>
+                <input type="checkbox" name="menuItemIds" value={dish.id} defaultChecked={selected.has(dish.id)} />
+                <span>{dish.name}{dish.active ? "" : " · oculto en carta"}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+    </div>
+  );
+}
+
+function MenuFields({ dishes, item }: { dishes: DishOption[]; item?: SpecialRecord }) {
+  const selectedId = item?.selections[0]?.menuItemId;
   return (
     <div className="form-grid">
-      <div className="field"><label>Tipo</label><select name="type" defaultValue={item?.type ?? SpecialType.MENU_DIA}><option value={SpecialType.MENU_DIA}>Menú del día</option><option value={SpecialType.OFERTA}>Oferta</option></select></div>
-      <div className="field"><label>Sección</label><select name="section" defaultValue={item?.section ?? ""}><option value="">Sin sección</option><option value="Primeros">Primeros</option><option value="Segundos">Segundos</option><option value="Postres">Postres</option></select></div>
-      <div className="field full"><label>Nombre</label><input name="name" required defaultValue={item?.name ?? ""} /></div>
-      <div className="field full"><label>Descripción</label><textarea name="description" defaultValue={item?.description ?? ""} /></div>
-      <div className="field full"><label>Ingredientes</label><input name="ingredients" defaultValue={item?.ingredients.join(", ") ?? ""} /></div>
+      <input type="hidden" name="type" value={SpecialType.MENU_DIA} />
       <div className="field full">
-        <label>Imagen</label>
-        <p className="field-help">JPG, PNG o WebP. Máximo 1,5 MB. Si no subes ninguna imagen, se utilizará una imagen genérica.</p>
-        <div className="admin-dish-image-row">
-          {item ? <img className="admin-dish-image-preview" src={specialImageSrc(item)} alt={`Vista previa de ${item.name}`} /> : null}
-          <div className="admin-dish-image-controls">
-            <input name="image" type="file" accept="image/jpeg,image/png,image/webp" />
-            {item?.hasImage ? <label className="inline-check"><input type="checkbox" name="removeImage" /> Eliminar imagen subida y usar la genérica</label> : null}
-          </div>
-        </div>
+        <label>Plato de la carta</label>
+        <DishSelect dishes={dishes} selectedId={selectedId} />
+        <p className="field-help">El nombre, la imagen, los ingredientes y los alérgenos se toman directamente de la Carta. No tendrás que escribirlos dos veces.</p>
       </div>
-      <div className="field full"><label>Alérgenos</label><p className="field-help">Selecciona uno o varios alérgenos del listado oficial.</p><AllergenSelector selected={item?.allergens ?? []} /></div>
-      <div className="field"><label>Precio (€), solo para ofertas</label><input name="price" inputMode="decimal" defaultValue={item ? euros(item.priceCents) : ""} placeholder={isMenu ? "El precio del menú se configura arriba" : "12,50"} /></div>
-      <label style={{ display: "flex", alignItems: "center", gap: 8 }}><input style={{ width: "auto" }} type="checkbox" name="active" defaultChecked={item?.active ?? true} /> Publicado</label>
+      <div className="field">
+        <label>Sección</label>
+        <select name="section" defaultValue={item?.section ?? "Primeros"} required>
+          <option value="Primeros">Primeros</option>
+          <option value="Segundos">Segundos</option>
+          <option value="Postres">Postres</option>
+        </select>
+      </div>
+      <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <input style={{ width: "auto" }} type="checkbox" name="active" defaultChecked={item?.active ?? true} /> Publicado
+      </label>
+      {item && !selectedId ? <div className="status-box warning full">Este elemento procede de una versión anterior. Selecciona ahora el plato correspondiente de la Carta y guarda los cambios.</div> : null}
+    </div>
+  );
+}
+
+function OfferFields({ dishes, item }: { dishes: DishOption[]; item?: SpecialRecord }) {
+  const selectedIds = item?.selections.map((selection) => selection.menuItemId) ?? [];
+  return (
+    <div className="form-grid">
+      <input type="hidden" name="type" value={SpecialType.OFERTA} />
+      <div className="field"><label>Nombre de la oferta</label><input name="name" required defaultValue={item?.name ?? ""} placeholder="Combo para compartir" /></div>
+      <div className="field"><label>Precio de la oferta (€)</label><input name="price" required inputMode="decimal" defaultValue={euros(item?.priceCents)} placeholder="18,00" /></div>
+      <div className="field full"><label>Descripción</label><textarea name="description" defaultValue={item?.description ?? ""} placeholder="Descripción opcional de la promoción." /></div>
+      <div className="field full">
+        <label>Platos incluidos</label>
+        <p className="field-help">Selecciona uno o varios platos de la Carta. El precio de esta oferta es independiente y nunca modifica el precio original de los platos.</p>
+        <DishCheckboxes dishes={dishes} selectedIds={selectedIds} />
+      </div>
+      <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <input style={{ width: "auto" }} type="checkbox" name="active" defaultChecked={item?.active ?? true} /> Publicada
+      </label>
+      {item && !selectedIds.length ? <div className="status-box warning full">Esta oferta procede de una versión anterior. Selecciona los platos de la Carta que forman parte de ella.</div> : null}
     </div>
   );
 }
 
 export default async function AdminSpecialsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  const [rawItems, settings, params] = await Promise.all([
-    prisma.specialItem.findMany({ orderBy: [{ type: "asc" }, { sortOrder: "asc" }, { name: "asc" }] }) as any,
+  const [rawItems, dishes, settings, params] = await Promise.all([
+    (prisma.specialItem as any).findMany({
+      orderBy: [{ type: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
+      include: ({
+        selections: {
+          orderBy: { sortOrder: "asc" },
+          include: { menuItem: { select: { id: true, name: true, category: true, active: true } } },
+        },
+      } as any),
+    }) as any,
+    prisma.menuItem.findMany({
+      orderBy: [{ category: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, category: true, active: true },
+    }),
     prisma.siteSettings.findUnique({ where: { id: 1 } }),
     searchParams,
   ]);
 
-  const items = (rawItems as any[]).map((item) => ({
-    ...item,
-    hasImage: Boolean(item.imageMime),
-    imageVersion: item.updatedAt instanceof Date ? item.updatedAt.getTime() : String(item.updatedAt ?? ""),
-  })) as Special[];
+  const items = rawItems as SpecialRecord[];
+  const dishOptions = dishes as DishOption[];
 
   const feedback: Record<string, string> = {
     created: "Elemento creado correctamente.",
     saved: "Cambios guardados correctamente.",
     deleted: "Elemento eliminado correctamente.",
-    price: "Precio y notas del menú guardados correctamente.",
-    image_size: "La imagen supera 1,5 MB. Reduce su tamaño e inténtalo de nuevo.",
-    image_format: "Formato de imagen no admitido. Utiliza JPG, PNG o WebP.",
+    price: "Precio del menú guardado correctamente.",
+    selection_required: "Selecciona al menos un plato de la Carta.",
+    section_required: "Selecciona si el plato pertenece a Primeros, Segundos o Postres.",
+    offer_price_required: "Indica el precio de la oferta.",
   };
 
   const menuItems = items.filter((item) => item.type === SpecialType.MENU_DIA);
@@ -72,27 +152,33 @@ export default async function AdminSpecialsPage({ searchParams }: { searchParams
 
   return (
     <div className="admin-page">
-      <div className="section-head"><div><div className="eyebrow">Contenido diario</div><h2>Menú del día y ofertas</h2><p>Gestiona las opciones del menú, sus imágenes y las promociones que se muestran a los clientes.</p></div></div>
-      {params.status && feedback[params.status] ? <div className={`status-box ${params.status.startsWith("image_") ? "error" : "success"} admin-flash`} role="status">{params.status.startsWith("image_") ? "⚠" : "✓"} {feedback[params.status]}</div> : null}
+      <div className="section-head">
+        <div>
+          <div className="eyebrow">Contenido diario</div>
+          <h2>Menú del día y ofertas</h2>
+          <p>Selecciona platos ya creados en la Carta para reutilizar su información, imágenes, ingredientes y alérgenos.</p>
+        </div>
+      </div>
+
+      {params.status && feedback[params.status] ? (
+        <div className={`status-box ${["selection_required", "section_required", "offer_price_required"].includes(params.status) ? "error" : "success"} admin-flash`} role="status">
+          {["selection_required", "section_required", "offer_price_required"].includes(params.status) ? "⚠" : "✓"} {feedback[params.status]}
+        </div>
+      ) : null}
 
       <section className="card">
-        <div className="eyebrow">Precio y nota del menú del día</div>
-        <h3 style={{ marginTop: 6 }}>Configuración general</h3>
-        <p className="muted">Aquí puedes definir el precio del menú y la frase opcional del servicio de pan/picos que aparece dentro de la carta.</p>
+        <div className="eyebrow">Menú del día</div>
+        <h3 style={{ marginTop: 6 }}>Precio general</h3>
+        <p className="muted">Los platos se eligen de la Carta. Aquí solo se establece el precio completo del menú.</p>
         <form action={updateMenuDayPrice} className="form-grid" style={{ marginTop: 14 }}>
           <input type="hidden" name="redirectTo" value="/admin/especiales" />
+          <input type="hidden" name="menuBreadPrice" value={euros((settings as any)?.menuBreadPriceCents ?? null)} />
+          {(settings as any)?.menuBreadPublished ? <input type="hidden" name="menuBreadPublished" value="on" /> : null}
           <div className="field">
             <label>Precio del menú (€)</label>
             <input name="menuDayPrice" required inputMode="decimal" defaultValue={euros(settings?.menuDayPriceCents ?? null)} placeholder="18,00" />
           </div>
-          <div className="field">
-            <label>Servicio de pan/picos (€)</label>
-            <input name="menuBreadPrice" inputMode="decimal" defaultValue={euros((settings as any)?.menuBreadPriceCents ?? null)} placeholder="1,00" />
-          </div>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 30 }}><input style={{ width: "auto" }} type="checkbox" name="menuBreadPublished" defaultChecked={(settings as any)?.menuBreadPublished ?? false} /> Mostrar “Servicio de pan/picos” en la carta</label>
-          <div className="field" style={{ display: "flex", alignItems: "end" }}>
-            <button className="button primary" type="submit">Guardar configuración</button>
-          </div>
+          <div className="field" style={{ display: "flex", alignItems: "end" }}><button className="button primary" type="submit">Guardar precio</button></div>
         </form>
       </section>
 
@@ -105,26 +191,43 @@ export default async function AdminSpecialsPage({ searchParams }: { searchParams
           return (
             <div className="order-group" key={section}>
               <h4>{section}</h4>
-              <SortableOrderList kind="special" items={sectionItems.map((item) => ({ id: item.id, label: item.name }))} />
+              <SortableOrderList kind="special" items={sectionItems.map((item) => ({ id: item.id, label: item.selections[0]?.menuItem.name ?? item.name }))} />
             </div>
           );
         })}
       </section>
 
+      <details className="admin-item" open>
+        <summary>＋ Añadir plato al menú del día</summary>
+        <form className="admin-form" action={createSpecialItem}><MenuFields dishes={dishOptions} /><button className="button primary" style={{ marginTop: 16 }}>Añadir al menú</button></form>
+      </details>
+
+      {menuItems.map((item) => (
+        <details className="admin-item" key={`${item.id}-${params.status ?? "idle"}`}>
+          <summary><span>{item.selections[0]?.menuItem.name ?? item.name}</span><span className="muted">{item.section ?? "Sin sección"} · {item.active ? "publicado" : "oculto"}</span></summary>
+          <form className="admin-form" action={updateSpecialItem.bind(null, item.id)}><MenuFields dishes={dishOptions} item={item} /><button className="button primary" style={{ marginTop: 16 }}>Guardar cambios</button></form>
+          <form action={deleteSpecialItem.bind(null, item.id)} style={{ marginTop: 10 }}><ConfirmButton message="¿Quitar este plato del menú del día?">Quitar del menú</ConfirmButton></form>
+        </details>
+      ))}
+
+      <div className="hr" />
+
       <section className="card order-card section-small">
-        <div className="eyebrow">Orden de ofertas</div>
-        <h3 style={{ marginTop: 6 }}>Arrastra las ofertas</h3>
+        <div className="eyebrow">Ofertas</div>
+        <h3 style={{ marginTop: 6 }}>Orden de aparición</h3>
         <SortableOrderList kind="special" items={offerItems.map((item) => ({ id: item.id, label: item.name, meta: item.active ? "Publicada" : "Oculta" }))} />
       </section>
 
-      <div className="hr" />
-      <details className="admin-item" open><summary>＋ Añadir elemento</summary><form className="admin-form" action={createSpecialItem} encType="multipart/form-data"><Fields /><button className="button primary" style={{ marginTop: 16 }}>Crear</button></form></details>
-      <div className="hr" />
-      {items.map((item) => (
+      <details className="admin-item" open>
+        <summary>＋ Crear oferta</summary>
+        <form className="admin-form" action={createSpecialItem}><OfferFields dishes={dishOptions} /><button className="button primary" style={{ marginTop: 16 }}>Crear oferta</button></form>
+      </details>
+
+      {offerItems.map((item) => (
         <details className="admin-item" key={`${item.id}-${params.status ?? "idle"}`}>
-          <summary><span>{item.name}</span><span className="muted">{item.type === SpecialType.OFERTA ? "Oferta" : `Menú del día · ${item.section ?? "Sin sección"}`} · {item.active ? "publicado" : "oculto"}</span></summary>
-          <form className="admin-form" action={updateSpecialItem.bind(null, item.id)} encType="multipart/form-data"><Fields item={item} /><button className="button primary" style={{ marginTop: 16 }}>Guardar cambios</button></form>
-          <form action={deleteSpecialItem.bind(null, item.id)} style={{ marginTop: 10 }}><ConfirmButton message={`¿Eliminar definitivamente ${item.name}?`}>Eliminar definitivamente</ConfirmButton></form>
+          <summary><span>{item.name}</span><span className="muted">{item.selections.length} plato{item.selections.length === 1 ? "" : "s"} · {item.active ? "publicada" : "oculta"}</span></summary>
+          <form className="admin-form" action={updateSpecialItem.bind(null, item.id)}><OfferFields dishes={dishOptions} item={item} /><button className="button primary" style={{ marginTop: 16 }}>Guardar cambios</button></form>
+          <form action={deleteSpecialItem.bind(null, item.id)} style={{ marginTop: 10 }}><ConfirmButton message={`¿Eliminar definitivamente la oferta ${item.name}?`}>Eliminar oferta</ConfirmButton></form>
         </details>
       ))}
     </div>

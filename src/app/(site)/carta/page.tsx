@@ -57,12 +57,6 @@ export default async function CartaPage() {
     <div className="page">
       <div className="eyebrow">Nuestra selección</div>
       <h1 style={{ fontSize: "clamp(3rem,7vw,5.5rem)" }}>Carta</h1>
-      {breadPrice ? (
-        <div className="status-box" style={{ marginTop: 18 }}>
-          Servicio de pan/picos: <strong>{breadPrice}</strong>
-        </div>
-      ) : null}
-
       {categoryOrder.map((category) => {
         const categoryItems = items.filter((item: any) => item.category === category);
         if (!categoryItems.length) return null;
@@ -73,6 +67,12 @@ export default async function CartaPage() {
           </section>
         );
       })}
+
+
+      <div className="menu-service-notes">
+        {breadPrice ? <p>* Servicio de pan/picos: <strong>{breadPrice}</strong></p> : null}
+        <p>* IVA incluido en los precios de la carta.</p>
+      </div>
 
       <section className="allergen-cta card">
         <div>

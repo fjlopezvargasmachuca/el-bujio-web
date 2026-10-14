@@ -72,9 +72,8 @@ function headerLines(label: string) {
   return [normalized];
 }
 
-function drawTableHeader(page: PdfPage, pageNumber: number) {
+function drawTableHeader(page: PdfPage) {
   text(page, MARGIN, 560, "Carta de alérgenos - Venta El Bujio", 15, true);
-  text(page, PAGE_W - 92, 560, `Página ${pageNumber}`, 8, false);
   text(page, MARGIN, 544, "Una X indica que el plato tiene registrado ese alérgeno.", 8, false);
 
   const y = TABLE_TOP - HEADER_H;
@@ -155,15 +154,16 @@ export function createAllergenPdf(items: AllergenPdfItem[]) {
   let page: PdfPage = [];
   let y = TABLE_TOP - HEADER_H;
   let pageNumber = 1;
-  drawTableHeader(page, pageNumber);
+  drawTableHeader(page);
 
   for (const row of rows) {
     if (y - ROW_H < TABLE_BOTTOM) {
-      text(page, MARGIN, 24, "Ante alergias o intolerancias, consulta siempre con el personal antes de pedir.", 7, false);
+      text(page, MARGIN, 28, "Ante alergias o intolerancias, consulta siempre con el personal antes de pedir.", 7, false);
+      centeredText(page, 0, 11, PAGE_W, String(pageNumber), 7.2, true);
       pages.push(page);
       page = [];
       pageNumber += 1;
-      drawTableHeader(page, pageNumber);
+      drawTableHeader(page);
       y = TABLE_TOP - HEADER_H;
     }
     if (row.kind === "category") drawCategoryRow(page, y, row.label);
@@ -171,7 +171,8 @@ export function createAllergenPdf(items: AllergenPdfItem[]) {
     y -= ROW_H;
   }
 
-  text(page, MARGIN, 24, "Ante alergias o intolerancias, consulta siempre con el personal antes de pedir.", 7, false);
+  text(page, MARGIN, 28, "Ante alergias o intolerancias, consulta siempre con el personal antes de pedir.", 7, false);
+  centeredText(page, 0, 11, PAGE_W, String(pageNumber), 7.2, true);
   pages.push(page);
 
   // Object layout: 1 catalog, 2 pages tree, 3 font regular, 4 font bold, then page/content pairs.

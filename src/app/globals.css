@@ -1147,3 +1147,120 @@ details.admin-item summary { cursor:pointer; font-weight:800; display:flex; just
   justify-items:center;
   text-align:center;
 }
+
+/* v1.16 · refinado visual, notas de carta y selección de platos */
+.feature-cross .showcase-item,
+.feature-cross .showcase-item:nth-child(2),
+.feature-cross .showcase-item:nth-child(3),
+.feature-cross .showcase-item:nth-child(4) {
+  background:linear-gradient(155deg,#dcc7a7,#c6a47d);
+  place-items:center;
+  text-align:center;
+}
+.feature-cross .showcase-item:hover,
+.feature-cross .showcase-item:nth-child(2):hover,
+.feature-cross .showcase-item:nth-child(3):hover,
+.feature-cross .showcase-item:nth-child(4):hover {
+  background:linear-gradient(155deg,#e7d5b9,#cfad85);
+}
+.land-home-cta {
+  justify-content:center;
+  text-align:center;
+  background:linear-gradient(155deg,#dcc7a7,#c6a47d);
+  color:#251b14;
+}
+.land-home-cta > div {
+  justify-items:center;
+  max-width:760px;
+}
+.land-home-cta p { color:#66513f; }
+.land-home-cta:hover { background:linear-gradient(155deg,#e7d5b9,#cfad85); }
+
+.menu-service-notes {
+  width:max-content;
+  max-width:100%;
+  margin:34px 0 18px;
+  padding:0;
+  color:var(--muted);
+  font-size:.92rem;
+}
+.menu-service-notes p { margin:4px 0; }
+.menu-day-note { margin-top:26px; max-width:760px; font-size:.92rem; }
+
+/* La categoría visible permanece bajo la cabecera hasta que llegue la siguiente. */
+.allergen-category-row > th,
+.allergen-category-row > td {
+  position:sticky!important;
+  top:132px!important;
+  z-index:24!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.18), 0 4px 10px rgba(0,0,0,.08);
+}
+.allergen-category-row .allergen-category-name {
+  left:0!important;
+  z-index:29!important;
+}
+.allergen-category-row .allergen-category-fill {
+  z-index:25!important;
+}
+
+.special-dish-selector {
+  display:grid;
+  gap:12px;
+  margin-top:8px;
+}
+.special-dish-selector fieldset {
+  margin:0;
+  padding:12px 14px 14px;
+  border:1px solid rgba(56,42,31,.12);
+  border-radius:14px;
+  background:rgba(255,255,255,.42);
+}
+.special-dish-selector legend {
+  padding:0 6px;
+  font-weight:800;
+  color:var(--brand-strong);
+}
+.special-dish-checks {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px 14px;
+}
+.special-dish-check {
+  padding:7px 8px;
+  border-radius:10px;
+}
+.special-dish-check:hover { background:rgba(109,80,56,.07); }
+
+.offer-card .offer-dish-summary {
+  margin-top:10px;
+  font-size:.9rem;
+  font-weight:700;
+  color:var(--brand-strong);
+}
+.offer-modal { width:min(780px,100%); }
+.offer-price { font-size:1.4rem; color:var(--brand-strong); }
+.offer-dish-grid { display:grid; gap:14px; margin-top:20px; }
+.offer-dish-item {
+  display:grid;
+  grid-template-columns:150px minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+  padding:12px;
+  border:1px solid rgba(54,37,25,.12);
+  border-radius:16px;
+  background:rgba(255,255,255,.35);
+}
+.offer-dish-item img {
+  width:150px;
+  aspect-ratio:4/3;
+  object-fit:cover;
+  border-radius:12px;
+}
+.offer-dish-item p { margin:7px 0 0; }
+
+@media (max-width:760px) {
+  .special-dish-checks { grid-template-columns:1fr; }
+  .offer-dish-item { grid-template-columns:1fr; }
+  .offer-dish-item img { width:100%; aspect-ratio:16/9; }
+  .menu-service-notes { width:100%; }
+}

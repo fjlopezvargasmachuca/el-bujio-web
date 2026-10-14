@@ -106,7 +106,7 @@ export default async function AdminCartaPage({ searchParams }: { searchParams: P
     <div className="admin-page">
       <div className="section-head">
         <div><div className="eyebrow">Carta</div><h2>Platos, bebidas, vinos y chacina</h2><p>Gestiona categorías, formatos de precio, imágenes, ingredientes y alérgenos desde un único lugar.</p></div>
-        <a className="button primary" href="/api/admin/carta/pdf">Descargar carta PDF</a>
+        <a className="button primary" href="/api/admin/carta/pdf">Imprimir carta</a>
       </div>
       {params.status && feedback[params.status] ? <div className={`status-box ${params.status.startsWith("image_") ? "error" : "success"} admin-flash`} role="status">{params.status.startsWith("image_") ? "⚠" : "✓"} {feedback[params.status]}</div> : null}
 

@@ -144,6 +144,7 @@ model MenuItem {
   sortOrder       Int          @default(0)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+  specialSelections SpecialSelection[]
 
   @@index([category, active, sortOrder])
 }
@@ -178,6 +179,20 @@ model SpecialItem {
   sortOrder   Int         @default(0)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  selections  SpecialSelection[]
 
   @@index([type, active, sortOrder])
+}
+
+model SpecialSelection {
+  id            String      @id @default(cuid())
+  specialItemId String
+  menuItemId    String
+  sortOrder     Int         @default(0)
+  specialItem   SpecialItem @relation(fields: [specialItemId], references: [id], onDelete: Cascade)
+  menuItem      MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@unique([specialItemId, menuItemId])
+  @@index([specialItemId, sortOrder])
+  @@index([menuItemId])
 }

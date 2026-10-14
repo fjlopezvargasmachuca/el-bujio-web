@@ -26,15 +26,9 @@ export default async function AllergenChartPage() {
 
       <div className="allergen-actions">
         <a className="button primary" href="/api/alergenos/pdf">Descargar carta de alérgenos (PDF)</a>
-        <span className="muted">El PDF se genera automáticamente con la carta publicada en ese momento.</span>
       </div>
 
       <div className="allergen-desktop-chart">
-        <div className="allergen-scroll-hint" aria-hidden="true">
-          <span>↔</span>
-          <span>En ordenador puedes desplazarte horizontalmente para consultar todas las columnas.</span>
-        </div>
-
         <div className="allergen-table-wrap" tabIndex={0} aria-label="Tabla desplazable de alérgenos">
           <table className="allergen-table">
             <thead>
@@ -106,7 +100,7 @@ export default async function AllergenChartPage() {
       </div>
 
       <div className="row-actions" style={{ marginTop: 24 }}>
-        <Link className="button" href="/carta">← Volver a la carta</Link>
+        <Link className="button" href="/carta">Volver a la carta</Link>
       </div>
     </div>
   );
