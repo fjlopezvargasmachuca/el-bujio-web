@@ -16,7 +16,8 @@
     "db:deploy": "prisma migrate deploy",
     "setup": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts",
     "verify": "npm run typecheck && npm run build",
-    "render:build": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts && next build"
+    "render:build": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts && next build",
+    "db:replace-menu": "tsx prisma/replace-production-menu.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
