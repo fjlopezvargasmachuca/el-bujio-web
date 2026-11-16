@@ -4,6 +4,8 @@ Aplicación web de Venta El Bujio desarrollada con **Next.js 15 + React 19 + Typ
 
 Esta revisión está preparada para continuar desplegándose en **Vercel** desde GitHub. El sistema de reservas sigue desactivado, aunque su estructura de base de datos permanece preparada para una fase futura.
 
+Pueden comprobar la aplicación desplegada en www.elbujio.com
+
 ## Cambios de esta versión
 
 - Carta inicial sincronizada con la fotografía facilitada por la venta.
